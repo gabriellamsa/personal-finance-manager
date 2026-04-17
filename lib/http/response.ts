@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
 import { ZodError } from "zod";
 
 import { AppError } from "@/lib/http/errors";
@@ -64,6 +65,49 @@ export function handleRouteError(error: unknown) {
       error.message,
       error.statusCode,
       error.fieldErrors,
+    );
+  }
+
+  if (error instanceof Prisma.PrismaClientKnownRequestError) {
+    if (error.code === "P2002") {
+      const targets = Array.isArray(error.meta?.target)
+        ? error.meta.target
+        : typeof error.meta?.target === "string"
+          ? [error.meta.target]
+          : [];
+
+      if (targets.includes("email")) {
+        return jsonError(
+          "RESOURCE_CONFLICT",
+          "An account with this email already exists.",
+          409,
+          {
+            email: ["An account with this email already exists."],
+          },
+        );
+      }
+
+      return jsonError("RESOURCE_CONFLICT", "The resource already exists.", 409);
+    }
+
+    if (error.code === "P2021" || error.code === "P2022") {
+      return jsonError(
+        "DATABASE_SCHEMA_NOT_READY",
+        process.env.NODE_ENV === "development"
+          ? "Database schema is not ready. Start PostgreSQL and run npm run db:migrate."
+          : "Service is temporarily unavailable.",
+        503,
+      );
+    }
+  }
+
+  if (error instanceof Prisma.PrismaClientInitializationError) {
+    return jsonError(
+      "DATABASE_UNAVAILABLE",
+      process.env.NODE_ENV === "development"
+        ? "Database connection is unavailable. Start PostgreSQL on localhost:5432 and run npm run db:migrate."
+        : "Service is temporarily unavailable.",
+      503,
     );
   }
 
