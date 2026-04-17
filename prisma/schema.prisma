@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+}
+
+enum CategoryScope {
+  SYSTEM
+  CUSTOM
+}
+
+model User {
+  id           String        @id @default(cuid())
+  name         String        @db.VarChar(60)
+  email        String        @unique @db.VarChar(255)
+  passwordHash String
+  currencyCode String        @default("USD") @db.VarChar(3)
+  timezone     String        @default("UTC") @db.VarChar(100)
+  categories   Category[]
+  transactions Transaction[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@map("users")
+}
+
+model Category {
+  id           String          @id @default(cuid())
+  name         String          @db.VarChar(50)
+  slug         String          @db.VarChar(60)
+  type         TransactionType
+  scope        CategoryScope   @default(CUSTOM)
+  systemKey    String?         @unique @db.VarChar(50)
+  color        String          @db.VarChar(7)
+  icon         String          @db.VarChar(30)
+  userId       String?
+  user         User?           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  @@unique([userId, type, slug])
+  @@index([userId, type])
+  @@index([scope, type])
+  @@map("categories")
+}
+
+model Transaction {
+  id            String          @id @default(cuid())
+  userId        String
+  categoryId    String
+  type          TransactionType
+  description   String          @db.VarChar(120)
+  notes         String?         @db.Text
+  amountInCents Int
+  occurredOn    DateTime        @db.Date
+  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category      Category        @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  @@index([userId, occurredOn(sort: Desc)])
+  @@index([userId, type, occurredOn(sort: Desc)])
+  @@index([categoryId, occurredOn(sort: Desc)])
+  @@map("transactions")
+}

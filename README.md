@@ -60,7 +60,7 @@ The product goal is to allow users to:
 - Tailwind CSS 4
 - Prisma
 - PostgreSQL
-- Auth.js
+- Custom JWT auth with HTTP-only cookies
 - Zod
 - React Hook Form
 - Recharts
@@ -84,6 +84,9 @@ Completed so far:
 - Clean Next.js base setup
 - Initial project architecture definition
 - Engineering contract and implementation guidelines
+- Prisma data model for users, categories, and transactions
+- Secure credential-based authentication foundation
+- Public, auth, and protected application route groups
 
 Planned next steps:
 
@@ -105,6 +108,7 @@ Planned next steps:
 
 ```bash
 npm install
+npm run db:generate
 npm run dev
 ```
 

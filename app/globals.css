@@ -1,8 +1,29 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #111827;
+  --background: #f4efe6;
+  --foreground: #14213d;
+  --muted: #6b7280;
+  --card: rgba(255, 253, 248, 0.88);
+  --card-strong: #fffdfa;
+  --border: rgba(20, 33, 61, 0.12);
+  --accent: #0f766e;
+  --accent-foreground: #f8fafc;
+  --danger: #b91c1c;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-card: var(--card);
+  --color-card-strong: var(--card-strong);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-danger: var(--danger);
+  --font-sans: var(--font-plus-jakarta-sans);
+  --font-mono: var(--font-ibm-plex-mono);
 }
 
 * {
@@ -17,12 +38,37 @@ html,
 body {
   margin: 0;
   min-height: 100%;
-  background: var(--background);
+  background:
+    radial-gradient(circle at top, rgba(15, 118, 110, 0.15), transparent 32%),
+    linear-gradient(180deg, #f9f4ec 0%, #f4efe6 100%);
   color: var(--foreground);
-  font-family:
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    sans-serif;
+  font-family: var(--font-plus-jakarta-sans), sans-serif;
+}
+
+body {
+  line-height: 1.5;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+::selection {
+  background: rgba(15, 118, 110, 0.18);
+}
+
+.app-shell-grid {
+  background-image:
+    linear-gradient(rgba(20, 33, 61, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(20, 33, 61, 0.035) 1px, transparent 1px);
+  background-position: center;
+  background-size: 32px 32px;
 }

@@ -19,7 +19,7 @@ Build a portfolio-grade full-stack product with production-oriented engineering 
 - Backend: Next.js Route Handlers for the API layer.
 - Database: PostgreSQL.
 - ORM: Prisma.
-- Authentication: Auth.js with Credentials Provider and JWT session strategy using secure HTTP-only cookies.
+- Authentication: custom JWT session layer with Argon2id password hashing and secure HTTP-only cookies.
 - Validation: Zod.
 - Forms: React Hook Form with Zod resolver.
 - Charts: Recharts.
@@ -31,7 +31,7 @@ Build a portfolio-grade full-stack product with production-oriented engineering 
 - Server Components should be the default for dashboard and list views to reduce client bundle size and keep data fetching close to the server.
 - Client Components should be used only where interactivity is required, such as forms, filters, dialogs, charts, and inline actions.
 - Prisma with PostgreSQL provides strong typing, maintainable schema evolution, and a professional data model for a portfolio-ready application.
-- Auth.js with credentials-based login avoids external auth dependencies for the initial build and keeps the app deployable with minimal infrastructure.
+- A custom JWT cookie session avoids the current Auth.js stable/beta split for credentials-only products and keeps authentication predictable inside Next.js 16.
 
 ## Data and Domain Rules
 
