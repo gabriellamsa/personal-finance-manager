@@ -7,6 +7,7 @@ import { cache } from "react";
 
 import { prisma } from "@/lib/db/prisma";
 import { getEnv } from "@/lib/env";
+import { AuthenticationError } from "@/lib/http/errors";
 import {
   AUTH_ROUTES,
   SESSION_COOKIE_NAME,
@@ -110,6 +111,16 @@ export async function requireCurrentUser() {
 
   if (!session) {
     redirect(AUTH_ROUTES.signIn);
+  }
+
+  return session.user;
+}
+
+export async function requireApiUser() {
+  const session = await getCurrentSession();
+
+  if (!session) {
+    throw new AuthenticationError();
   }
 
   return session.user;
