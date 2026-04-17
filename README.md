@@ -30,12 +30,14 @@ The project is actively implemented and already includes the core finance flow.
 - Dashboard balance, total income, total expenses, recent transactions, category chart, and monthly summary chart
 - Standardized API success and error envelopes
 - Loading, empty, success, and error states across the main product flows
+- Strategic automated tests for core services and route handlers with Vitest
+- Basic CI workflow for lint, test, and production build validation
 
 ### In Progress
 
 - Additional UX polish and deeper product refinement
 - README deployment examples for specific providers once a hosting target is chosen
-- Test coverage and CI workflow setup
+- Broader test coverage for more feature surfaces
 
 ## Tech Stack
 
@@ -183,11 +185,18 @@ npm run dev
 npm run build
 npm run start
 npm run lint
+npm run test
+npm run test:watch
 npm run db:generate
 npm run db:migrate
 npm run db:deploy
 npm run db:seed
 ```
+
+## Quality Assurance
+
+- Vitest covers critical service and route-handler behavior for authentication and transaction flows
+- GitHub Actions runs lint, test, and build on every push to `main` and on pull requests
 
 ## Security Notes
 
