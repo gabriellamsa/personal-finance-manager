@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 
 import { DeleteTransactionButton } from "@/features/transactions/components/delete-transaction-button";
@@ -15,12 +16,16 @@ import { formatDate } from "@/lib/formatters/date";
 type TransactionsListProps = {
   categories: CategoryListItem[];
   currencyCode: string;
+  hasActiveFilters?: boolean;
+  resetHref?: string;
   transactions: TransactionListItem[];
 };
 
 export function TransactionsList({
   categories,
   currencyCode,
+  hasActiveFilters = false,
+  resetHref = "/transactions",
   transactions,
 }: TransactionsListProps) {
   const [editingTransactionId, setEditingTransactionId] = useState<string | null>(
@@ -30,9 +35,25 @@ export function TransactionsList({
   if (!transactions.length) {
     return (
       <Card className="bg-card-strong">
-        <CardContent className="text-sm text-foreground/64">
-          No transactions match the current filters yet. Create your first entry
-          above to start building the dashboard.
+        <CardContent className="space-y-4 text-sm text-foreground/64">
+          <div className="space-y-2">
+            <p className="text-base font-semibold text-foreground">
+              {hasActiveFilters
+                ? "No transactions match the current filters."
+                : "No transactions recorded yet."}
+            </p>
+            <p>
+              {hasActiveFilters
+                ? "Adjust the filters or clear them to see more results."
+                : "Create your first income or expense entry above to start building the dashboard."}
+            </p>
+          </div>
+
+          {hasActiveFilters ? (
+            <Link href={resetHref}>
+              <Button variant="secondary">Clear filters</Button>
+            </Link>
+          ) : null}
         </CardContent>
       </Card>
     );

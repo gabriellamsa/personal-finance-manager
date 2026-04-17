@@ -1,102 +1,148 @@
 # Personal Finance Management System
 
-A portfolio-grade full-stack web application for managing personal finances with secure authentication, transaction tracking, category-based reporting, and a professional financial dashboard.
+A portfolio-grade full-stack finance application for secure account management, transaction tracking, category-based reporting, and dashboard analytics.
 
-## Overview
+## Product Scope
 
-This project is being built with a production-oriented engineering mindset to demonstrate real-world full-stack capabilities, including authentication, database modeling, API design, validation, data visualization, and scalable application structure.
+The product is designed as a production-minded personal finance system where users can:
 
-The product goal is to allow users to:
+- Create an account and sign in securely
+- Record income and expenses
+- Organize transactions by default or custom categories
+- Filter historical data by type, category, and date range
+- Review totals, recent activity, and reporting charts in a dashboard
 
-- Register and sign in securely
-- Track income and expenses
-- Organize transactions by category
-- Monitor balance and financial trends
-- Filter historical data by date, type, and category
-- Analyze spending behavior through charts and summaries
+## Current Status
 
-## Planned Core Features
+The project is actively implemented and already includes the core finance flow.
 
-### Authentication
+### Implemented
 
-- User registration
-- User login and logout
-- Protected application routes
-- Secure session handling
+- Credential-based authentication with Argon2id password hashing
+- Signed JWT session cookies stored as HTTP-only cookies
+- Protected route handling in both server-side data access and `proxy.ts`
+- User registration, login, logout, and authenticated session lookup
+- Prisma schema for users, categories, and transactions
+- Default seeded categories for income and expenses
+- Custom category creation
+- Transaction create, read, update, and delete flows
+- Transaction filters by type, category, date range, and page
+- Dashboard balance, total income, total expenses, recent transactions, category chart, and monthly summary chart
+- Standardized API success and error envelopes
+- Loading, empty, success, and error states across the main product flows
 
-### Dashboard
+### In Progress
 
-- Total balance overview
-- Total income and total expenses cards
-- Recent transactions feed
-- Monthly financial summary
-- Category-based charts and indicators
-
-### Transactions
-
-- Create, edit, and delete transactions
-- Transaction listing with clean organization
-- Filters by date range, transaction type, and category
-- Pagination-ready structure
-
-### Categories
-
-- Default system categories
-- Custom user-defined categories
-- Category-based reporting
-
-### UX and Product Quality
-
-- Responsive application layout
-- Loading, empty, success, and error states
-- Accessible forms with validation feedback
-- Professional UI suitable for a production-style portfolio project
+- Additional UX polish and deeper product refinement
+- README deployment examples for specific providers once a hosting target is chosen
+- Test coverage and CI workflow setup
 
 ## Tech Stack
 
-- Next.js 16
+- Next.js 16 App Router
 - React 19
 - TypeScript
 - Tailwind CSS 4
 - Prisma
 - PostgreSQL
-- Custom JWT auth with HTTP-only cookies
 - Zod
 - React Hook Form
 - Recharts
+- Custom JWT auth with HTTP-only cookies
 
-## Engineering Goals
+## Architecture Decisions
 
-- Strong type safety across frontend and backend
-- Clean, scalable folder structure
-- Reusable UI and domain abstractions
-- Standardized API error handling
-- Secure password hashing and auth protection
-- Clear separation of concerns
-- Deployment-ready foundation
+### Why Next.js Route Handlers
 
-## Project Status
+The application keeps frontend, backend, and authentication in a single cohesive codebase. Route Handlers provide a clean API boundary without introducing a second Node service prematurely.
 
-The repository is currently in the foundation phase.
+### Why Custom JWT Cookies
 
-Completed so far:
+The project currently uses email/password authentication only. A custom JWT session layer keeps the authentication flow explicit and predictable while avoiding unnecessary library complexity for this scope.
 
-- Clean Next.js base setup
-- Initial project architecture definition
-- Engineering contract and implementation guidelines
-- Prisma data model for users, categories, and transactions
-- Secure credential-based authentication foundation
-- Public, auth, and protected application route groups
+### Why Prisma + PostgreSQL
 
-Planned next steps:
+This stack gives strong type safety, explicit relational modeling, and a realistic migration workflow suitable for a production-style portfolio project.
 
-1. Define the application folder structure by feature
-2. Model the database schema and domain entities
-3. Implement authentication
-4. Build transactions, categories, and dashboard flows
-5. Refine UX, validations, and deployment readiness
+### Domain Rules
 
-## Local Development
+- Money is stored as integer cents, not floating-point decimals.
+- Every transaction belongs to one user and one category.
+- Categories can be system-defined or user-defined.
+- Dashboard totals are always derived from persisted transaction data.
+
+## Folder Structure
+
+```text
+app/
+  (public)/
+  (auth)/
+  (app)/
+  api/
+components/
+  shared/
+  ui/
+features/
+  auth/
+  categories/
+  dashboard/
+  transactions/
+lib/
+  auth/
+  constants/
+  crypto/
+  db/
+  env/
+  formatters/
+  http/
+  utils/
+prisma/
+```
+
+## Main Routes
+
+### Public
+
+- `/`
+- `/sign-in`
+- `/sign-up`
+
+### Protected
+
+- `/dashboard`
+- `/transactions`
+- `/categories`
+
+### API
+
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+- `POST /api/auth/logout`
+- `GET /api/auth/session`
+- `GET /api/categories`
+- `POST /api/categories`
+- `GET /api/transactions`
+- `POST /api/transactions`
+- `PATCH /api/transactions/[transactionId]`
+- `DELETE /api/transactions/[transactionId]`
+
+## Environment Variables
+
+Create a `.env` file based on `.env.example`.
+
+```env
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/personal_finance_manager?schema=public"
+APP_URL="http://localhost:3000"
+JWT_SECRET="replace-with-a-long-random-secret-at-least-32-characters"
+```
+
+### Variable Notes
+
+- `DATABASE_URL`: PostgreSQL connection string used by Prisma
+- `APP_URL`: Base application URL for local execution
+- `JWT_SECRET`: Secret used to sign and verify session tokens
+
+## Local Setup
 
 ### Requirements
 
@@ -104,16 +150,75 @@ Planned next steps:
 - npm
 - PostgreSQL
 
-### Run the project
+### Install dependencies
 
 ```bash
 npm install
-npm run db:generate
+```
+
+### Run database migrations
+
+```bash
+npm run db:migrate
+```
+
+### Seed default categories
+
+```bash
+npm run db:seed
+```
+
+### Start the development server
+
+```bash
 npm run dev
 ```
 
-The application will be available at [http://localhost:3000](http://localhost:3000).
+The application will run at [http://localhost:3000](http://localhost:3000).
 
-## Notes
+## Available Scripts
 
-This project is intentionally being built as a professional portfolio piece, prioritizing maintainability, clarity, security, and realistic product architecture over tutorial-style shortcuts.
+```bash
+npm run dev
+npm run build
+npm run start
+npm run lint
+npm run db:generate
+npm run db:migrate
+npm run db:deploy
+npm run db:seed
+```
+
+## Security Notes
+
+- Passwords are hashed with Argon2id before persistence
+- Sessions are stored in HTTP-only cookies
+- Sensitive routes are protected in both `proxy.ts` and server-side auth guards
+- Validation is enforced with Zod at the API boundary
+- Authorization checks always scope access by authenticated user id
+
+## Deployment Notes
+
+The codebase is deployment-ready, but no hosting provider integration is hardcoded yet.
+
+To deploy this project, you will need:
+
+- A Node-compatible hosting platform for the Next.js application
+- A PostgreSQL database for production
+- Production environment variables for `DATABASE_URL`, `APP_URL`, and `JWT_SECRET`
+- A strong random JWT secret and secure database credentials
+
+### Recommended deployment sequence
+
+1. Provision a production PostgreSQL database.
+2. Configure production environment variables.
+3. Run `npm run db:deploy` during the deployment pipeline.
+4. Start the application with `npm run build` and `npm run start`, or use your platform's standard Next.js deployment flow.
+
+## Engineering Goals
+
+- Strong type safety from UI to database access
+- Clear separation of concerns between pages, services, schemas, and infrastructure
+- Reusable UI primitives and domain services
+- Professional UX with deliberate loading, empty, success, and error states
+- Production-style project quality suitable for portfolio presentation

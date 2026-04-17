@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Button } from "@/components/ui/button";
+import { FormMessage } from "@/components/ui/form-message";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
@@ -14,6 +15,7 @@ import {
   type CreateCategoryFormInput,
   type CreateCategoryInput,
 } from "@/features/categories/categories.schemas";
+import { getClientErrorMessage } from "@/lib/http/client";
 import type { ApiFailure, ApiSuccess } from "@/lib/http/response";
 
 type CategoryResponse =
@@ -41,32 +43,40 @@ export function CategoryForm() {
   async function handleSubmit(values: CreateCategoryInput) {
     setFormError(null);
     setSuccessMessage(null);
+    try {
+      const response = await fetch("/api/categories", {
+        body: JSON.stringify(values),
+        headers: {
+          "content-type": "application/json",
+        },
+        method: "POST",
+      });
 
-    const response = await fetch("/api/categories", {
-      body: JSON.stringify(values),
-      headers: {
-        "content-type": "application/json",
-      },
-      method: "POST",
-    });
+      const result = (await response.json()) as CategoryResponse;
 
-    const result = (await response.json()) as CategoryResponse;
+      if (!response.ok && "error" in result) {
+        setFormError(result.error.message);
+        return;
+      }
 
-    if (!response.ok && "error" in result) {
-      setFormError(result.error.message);
-      return;
+      setSuccessMessage("Custom category created successfully.");
+      form.reset({
+        color: "#0F766E",
+        name: "",
+        type: values.type,
+      });
+
+      startTransition(() => {
+        router.refresh();
+      });
+    } catch (error) {
+      setFormError(
+        getClientErrorMessage(
+          error,
+          "Unable to create the category right now. Please try again.",
+        ),
+      );
     }
-
-    setSuccessMessage("Custom category created successfully.");
-    form.reset({
-      color: "#0F766E",
-      name: "",
-      type: values.type,
-    });
-
-    startTransition(() => {
-      router.refresh();
-    });
   }
 
   return (
@@ -107,11 +117,11 @@ export function CategoryForm() {
         </Button>
       </div>
 
-      {formError ? (
-        <p className="md:col-span-4 text-sm text-danger">{formError}</p>
-      ) : null}
+      {formError ? <FormMessage className="md:col-span-4" tone="error">{formError}</FormMessage> : null}
       {successMessage ? (
-        <p className="md:col-span-4 text-sm text-accent">{successMessage}</p>
+        <FormMessage className="md:col-span-4" tone="success">
+          {successMessage}
+        </FormMessage>
       ) : null}
     </form>
   );

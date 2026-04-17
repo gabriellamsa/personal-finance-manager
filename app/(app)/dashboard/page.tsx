@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -33,11 +35,34 @@ export default async function DashboardPage() {
           Welcome back, {user.name.split(" ")[0]}.
         </h1>
         <p className="max-w-2xl text-base text-foreground/66">
-          The protected area is now active. The next steps will connect real
-          transaction data, category reports, charts, and period filters to this
-          dashboard.
+          Your financial snapshot is now powered by real transactions, category
+          aggregation, and monthly reporting data.
         </p>
       </div>
+
+      {!summary.recentTransactions.length ? (
+        <Card className="bg-card-strong">
+          <CardContent className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div className="space-y-2">
+              <p className="text-lg font-semibold text-foreground">
+                Your dashboard is ready for real data.
+              </p>
+              <p className="max-w-2xl text-sm text-foreground/64">
+                Add your first transaction to unlock recent activity, category
+                breakdowns, and the six-month financial summary.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <Link href="/transactions">
+                <Button>Create first transaction</Button>
+              </Link>
+              <Link href="/categories">
+                <Button variant="secondary">Review categories</Button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+      ) : null}
 
       <div className="grid gap-4 xl:grid-cols-3">
         <Card className="bg-card-strong">
@@ -122,8 +147,8 @@ export default async function DashboardPage() {
               ))
             ) : (
               <p className="text-sm text-foreground/64">
-                No recent transactions yet. Start by adding income or expenses in
-                the transactions section.
+                No recent transactions yet. Add your first entry in the transactions
+                area to populate the dashboard.
               </p>
             )}
           </CardContent>

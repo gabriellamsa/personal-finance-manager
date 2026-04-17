@@ -33,11 +33,11 @@ export default async function CategoriesPage() {
           Categories
         </p>
         <h1 className="text-4xl font-semibold tracking-tight text-foreground">
-          System and custom categories already have a data model.
+          Organize reporting with system and custom categories.
         </h1>
         <p className="max-w-2xl text-base text-foreground/66">
-          System categories are available immediately, and custom categories can
-          now be added to support your own reporting structure.
+          System categories are available immediately, and custom categories let
+          you adapt the product to your own income and expense structure.
         </p>
       </div>
 
@@ -48,6 +48,13 @@ export default async function CategoriesPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <CategoryForm />
+
+          {!categories.some((category) => category.scope === "CUSTOM") ? (
+            <div className="rounded-[24px] border border-dashed border-border bg-white/72 p-4 text-sm text-foreground/64">
+              You are currently using only system categories. Add custom ones when
+              your financial workflow needs more granular reporting.
+            </div>
+          ) : null}
         </CardContent>
       </Card>
 

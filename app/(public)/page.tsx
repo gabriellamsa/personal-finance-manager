@@ -14,8 +14,8 @@ import { AUTH_ROUTES } from "@/lib/constants/auth";
 
 const featureHighlights = [
   "Secure sign-up and sign-in with HTTP-only cookie sessions",
-  "Transaction and category architecture ready for scalable CRUD",
-  "Dashboard-ready data model for financial analytics and charts",
+  "Transactions and categories connected to real CRUD and reporting flows",
+  "Dashboard summaries and charts powered by real aggregated finance data",
 ] as const;
 
 export default async function MarketingPage() {
@@ -48,7 +48,8 @@ export default async function MarketingPage() {
               <p className="max-w-2xl text-lg text-foreground/68">
                 Personal Finance Management System is a full-stack application for
                 registering transactions, organizing categories, and monitoring
-                balance performance with product-grade engineering foundations.
+                balance performance with a production-minded architecture and
+                portfolio-grade UX.
               </p>
             </div>
             <div className="flex flex-wrap gap-3">
@@ -69,7 +70,7 @@ export default async function MarketingPage() {
                 Current foundation
               </CardDescription>
               <CardTitle className="text-white">
-                Architecture and authentication baseline are now in place.
+                Core finance flows are live and ready for continued refinement.
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 text-sm text-white/78">

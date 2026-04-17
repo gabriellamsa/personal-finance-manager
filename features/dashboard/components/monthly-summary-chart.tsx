@@ -36,7 +36,7 @@ export function MonthlySummaryChart({
   if (!data.length) {
     return (
       <div className="flex h-[300px] items-center justify-center text-sm text-foreground/62">
-        Monthly chart data will appear once transactions are recorded.
+        Monthly trend data will appear once transactions are recorded.
       </div>
     );
   }

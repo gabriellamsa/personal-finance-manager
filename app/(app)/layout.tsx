@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
-import Link from "next/link";
 
+import { AppSidebarNav } from "@/components/shared/app-sidebar-nav";
 import { Logo } from "@/components/shared/logo";
 import { SignOutButton } from "@/components/shared/sign-out-button";
 import { requireCurrentUser } from "@/lib/auth/session";
@@ -25,17 +25,7 @@ export default async function AppLayout({ children }: AppLayoutProps) {
           <div className="space-y-8">
             <Logo />
 
-            <nav className="space-y-2">
-              {navigationItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="flex items-center justify-between rounded-2xl px-4 py-3 text-sm font-medium text-foreground/72 transition hover:bg-white hover:text-foreground"
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </nav>
+            <AppSidebarNav items={navigationItems} />
           </div>
 
           <div className="space-y-4 rounded-[24px] border border-border bg-white/70 p-4">

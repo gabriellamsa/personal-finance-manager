@@ -28,7 +28,7 @@ export function CategoryBreakdownChart({
   if (!data.length) {
     return (
       <div className="flex h-[280px] items-center justify-center text-sm text-foreground/62">
-        No expense data is available for the current month yet.
+        Add expense transactions this month to populate the category chart.
       </div>
     );
   }

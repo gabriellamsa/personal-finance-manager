@@ -36,8 +36,8 @@ export default async function AuthLayout({ children }: AuthLayoutProps) {
               JWT session layer.
             </div>
             <div className="rounded-2xl border border-white/12 bg-white/6 p-4 text-sm text-white/78">
-              Ready for transactions, dashboard analytics, and category-based
-              reports in the next implementation steps.
+              Already connected to protected pages, transaction CRUD, category
+              management, and dashboard reporting.
             </div>
           </div>
         </section>

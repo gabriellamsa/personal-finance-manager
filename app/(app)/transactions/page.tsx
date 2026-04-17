@@ -86,8 +86,8 @@ export default async function TransactionsPage({
           Track, filter, and maintain your financial history.
         </h1>
         <p className="max-w-2xl text-base text-foreground/66">
-          Transactions are now connected to categories, filters, pagination, and
-          real CRUD actions.
+          Review income and expenses in one place, refine results with filters,
+          and keep every record aligned with your reporting categories.
         </p>
       </div>
 
@@ -197,6 +197,8 @@ export default async function TransactionsPage({
       <TransactionsList
         categories={categories}
         currencyCode={user.currencyCode}
+        hasActiveFilters={Boolean(filters.categoryId || filters.from || filters.to || filters.type)}
+        resetHref="/transactions"
         transactions={transactionsResult.transactions}
       />
 

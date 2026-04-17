@@ -11,6 +11,7 @@ import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Button } from "@/components/ui/button";
+import { FormMessage } from "@/components/ui/form-message";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
@@ -22,6 +23,7 @@ import {
   type TransactionFormValues,
 } from "@/features/transactions/transactions.schemas";
 import type { TransactionListItem } from "@/features/transactions/transactions.types";
+import { getClientErrorMessage } from "@/lib/http/client";
 import type { ApiFailure, ApiSuccess } from "@/lib/http/response";
 import { toDateInputValue } from "@/lib/utils/date";
 
@@ -117,42 +119,50 @@ export function TransactionForm({
   async function handleSubmit(values: TransactionFormInput) {
     setFormError(null);
     setSuccessMessage(null);
-
-    const response = await fetch(
-      mode === "create"
-        ? "/api/transactions"
-        : `/api/transactions/${transaction?.id}`,
-      {
-        body: JSON.stringify(values),
-        headers: {
-          "content-type": "application/json",
+    try {
+      const response = await fetch(
+        mode === "create"
+          ? "/api/transactions"
+          : `/api/transactions/${transaction?.id}`,
+        {
+          body: JSON.stringify(values),
+          headers: {
+            "content-type": "application/json",
+          },
+          method: mode === "create" ? "POST" : "PATCH",
         },
-        method: mode === "create" ? "POST" : "PATCH",
-      },
-    );
+      );
 
-    const result = (await response.json()) as TransactionResponse;
+      const result = (await response.json()) as TransactionResponse;
 
-    if (!response.ok && "error" in result) {
-      setFormError(result.error.message);
-      return;
+      if (!response.ok && "error" in result) {
+        setFormError(result.error.message);
+        return;
+      }
+
+      setSuccessMessage(
+        mode === "create"
+          ? "Transaction created successfully."
+          : "Transaction updated successfully.",
+      );
+
+      if (mode === "create") {
+        form.reset(getInitialValues(categories));
+      }
+
+      onCompleted?.();
+
+      startTransition(() => {
+        router.refresh();
+      });
+    } catch (error) {
+      setFormError(
+        getClientErrorMessage(
+          error,
+          "Unable to save the transaction right now. Please try again.",
+        ),
+      );
     }
-
-    setSuccessMessage(
-      mode === "create"
-        ? "Transaction created successfully."
-        : "Transaction updated successfully.",
-    );
-
-    if (mode === "create") {
-      form.reset(getInitialValues(categories));
-    }
-
-    onCompleted?.();
-
-    startTransition(() => {
-      router.refresh();
-    });
   }
 
   return (
@@ -243,9 +253,15 @@ export function TransactionForm({
         ) : null}
       </div>
 
-      {formError ? <p className="md:col-span-2 text-sm text-danger">{formError}</p> : null}
+      {formError ? (
+        <FormMessage className="md:col-span-2" tone="error">
+          {formError}
+        </FormMessage>
+      ) : null}
       {successMessage ? (
-        <p className="md:col-span-2 text-sm text-accent">{successMessage}</p>
+        <FormMessage className="md:col-span-2" tone="success">
+          {successMessage}
+        </FormMessage>
       ) : null}
 
       <div className="md:col-span-2 flex flex-wrap gap-3">
