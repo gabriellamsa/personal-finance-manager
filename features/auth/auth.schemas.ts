@@ -13,7 +13,7 @@ export const displayNameSchema = z
   .min(2, "Name must be at least 2 characters long.")
   .max(60, "Name must be 60 characters or fewer.");
 
-const passwordSchema = z
+export const passwordSchema = z
   .string()
   .min(8, "Password must be at least 8 characters long.")
   .max(72, "Password must be 72 characters or fewer.")
@@ -43,5 +43,30 @@ export const signUpSchema = z
     }
   });
 
+export const changePasswordSchema = z
+  .object({
+    confirmNewPassword: z.string().min(1, "Confirm your new password."),
+    currentPassword: z.string().min(1, "Current password is required."),
+    newPassword: passwordSchema,
+  })
+  .superRefine(({ confirmNewPassword, currentPassword, newPassword }, context) => {
+    if (newPassword === currentPassword) {
+      context.addIssue({
+        code: "custom",
+        message: "Choose a new password different from the current one.",
+        path: ["newPassword"],
+      });
+    }
+
+    if (newPassword !== confirmNewPassword) {
+      context.addIssue({
+        code: "custom",
+        message: "New passwords do not match.",
+        path: ["confirmNewPassword"],
+      });
+    }
+  });
+
 export type SignInInput = z.infer<typeof signInSchema>;
 export type SignUpInput = z.infer<typeof signUpSchema>;
+export type ChangePasswordInput = z.infer<typeof changePasswordSchema>;

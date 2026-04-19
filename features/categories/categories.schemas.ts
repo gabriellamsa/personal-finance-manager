@@ -15,5 +15,9 @@ export const createCategorySchema = z.object({
   type: z.enum(TRANSACTION_TYPES),
 });
 
+export const updateCategorySchema = createCategorySchema;
+
 export type CreateCategoryFormInput = z.input<typeof createCategorySchema>;
 export type CreateCategoryInput = z.output<typeof createCategorySchema>;
+export type UpdateCategoryFormInput = z.input<typeof updateCategorySchema>;
+export type UpdateCategoryInput = z.output<typeof updateCategorySchema>;

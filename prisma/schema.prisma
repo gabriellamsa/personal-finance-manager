@@ -22,6 +22,7 @@ model User {
   name         String        @db.VarChar(60)
   email        String        @unique @db.VarChar(255)
   passwordHash String
+  sessionVersion Int         @default(0)
   currencyCode String        @default("USD") @db.VarChar(3)
   timezone     String        @default("UTC") @db.VarChar(100)
   categories   Category[]

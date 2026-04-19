@@ -7,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { ChangePasswordForm } from "@/features/auth/components/change-password-form";
 import { ProfileForm } from "@/features/profile/components/profile-form";
 import { getProfileSettings } from "@/features/profile/profile.service";
 import { requireCurrentUser } from "@/lib/auth/session";
@@ -40,25 +41,41 @@ export default async function SettingsPage() {
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1.25fr)_minmax(0,0.75fr)]">
-        <Card className="bg-card-strong">
-          <CardHeader>
-            <CardDescription>Profile editor</CardDescription>
-            <CardTitle>Update account details and preferences</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ProfileForm
-              currencyOptions={getCurrencyOptions()}
-              initialValues={{
-                currencyCode: profile.user.currencyCode,
-                email: profile.user.email,
-                name: profile.user.name,
-                timezone: profile.user.timezone,
-              }}
-              previewTimestamp={new Date().toISOString()}
-              timezoneOptions={getTimeZoneOptions()}
-            />
-          </CardContent>
-        </Card>
+        <div className="space-y-6">
+          <Card className="bg-card-strong">
+            <CardHeader>
+              <CardDescription>Profile editor</CardDescription>
+              <CardTitle>Update account details and preferences</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ProfileForm
+                currencyOptions={getCurrencyOptions()}
+                initialValues={{
+                  currencyCode: profile.user.currencyCode,
+                  email: profile.user.email,
+                  name: profile.user.name,
+                  timezone: profile.user.timezone,
+                }}
+                previewTimestamp={new Date().toISOString()}
+                timezoneOptions={getTimeZoneOptions()}
+              />
+            </CardContent>
+          </Card>
+
+          <Card className="bg-card-strong">
+            <CardHeader>
+              <CardDescription>Account security</CardDescription>
+              <CardTitle>Change password and invalidate older sessions</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-sm text-foreground/64">
+                After a successful password change, older signed sessions become
+                invalid and the current browser receives a fresh session token.
+              </p>
+              <ChangePasswordForm />
+            </CardContent>
+          </Card>
+        </div>
 
         <div className="space-y-6">
           <Card className="bg-card-strong">

@@ -17,12 +17,14 @@ import {
 type SessionPayload = JWTPayload & {
   email: string;
   name: string;
+  sessionVersion: number;
 };
 
 type SessionUser = {
   email: string;
   id: string;
   name: string;
+  sessionVersion: number;
 };
 
 function getSessionSecret() {
@@ -33,6 +35,7 @@ export async function createSessionToken(user: SessionUser) {
   return new SignJWT({
     email: user.email,
     name: user.name,
+    sessionVersion: user.sessionVersion,
   })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
@@ -93,16 +96,25 @@ export const getCurrentSession = cache(async () => {
       email: true,
       id: true,
       name: true,
+      sessionVersion: true,
       timezone: true,
     },
   });
 
-  if (!user) {
+  if (!user || payload.sessionVersion !== user.sessionVersion) {
     return null;
   }
 
+  const sessionUser = {
+    currencyCode: user.currencyCode,
+    email: user.email,
+    id: user.id,
+    name: user.name,
+    timezone: user.timezone,
+  };
+
   return {
-    user,
+    user: sessionUser,
   };
 });
 

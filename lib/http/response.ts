@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
 import { ZodError } from "zod";
 
-import { AppError } from "@/lib/http/errors";
+import { AppError, TooManyRequestsError } from "@/lib/http/errors";
 
 export type ApiSuccess<T> = {
   data: T;
@@ -60,12 +60,18 @@ export function handleRouteError(error: unknown) {
   }
 
   if (error instanceof AppError) {
-    return jsonError(
+    const response = jsonError(
       error.code,
       error.message,
       error.statusCode,
       error.fieldErrors,
     );
+
+    if (error instanceof TooManyRequestsError && error.retryAfterSeconds) {
+      response.headers.set("Retry-After", String(error.retryAfterSeconds));
+    }
+
+    return response;
   }
 
   if (error instanceof Prisma.PrismaClientKnownRequestError) {

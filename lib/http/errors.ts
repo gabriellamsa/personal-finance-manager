@@ -59,3 +59,19 @@ export class ValidationError extends AppError {
     });
   }
 }
+
+export class TooManyRequestsError extends AppError {
+  readonly retryAfterSeconds?: number;
+
+  constructor(
+    message = "Too many requests. Please try again later.",
+    retryAfterSeconds?: number,
+  ) {
+    super({
+      code: "RATE_LIMITED",
+      message,
+      statusCode: 429,
+    });
+    this.retryAfterSeconds = retryAfterSeconds;
+  }
+}

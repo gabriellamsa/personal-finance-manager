@@ -5,9 +5,16 @@ import type { Prisma, TransactionType } from "@prisma/client";
 import { DEFAULT_CATEGORIES } from "@/features/categories/default-categories";
 import type { CategoryListItem } from "@/features/categories/categories.types";
 import { prisma } from "@/lib/db/prisma";
-import { ConflictError, NotFoundError } from "@/lib/http/errors";
+import {
+  ConflictError,
+  NotFoundError,
+  ValidationError,
+} from "@/lib/http/errors";
 import { slugify } from "@/lib/utils/slugify";
-import type { CreateCategoryInput } from "@/features/categories/categories.schemas";
+import type {
+  CreateCategoryInput,
+  UpdateCategoryInput,
+} from "@/features/categories/categories.schemas";
 
 async function ensureSystemCategories() {
   await prisma.category.createMany({
@@ -60,6 +67,7 @@ async function generateUniqueSlug(
   userId: string,
   name: string,
   type: TransactionType,
+  excludeCategoryId?: string,
 ) {
   const baseSlug = slugify(name);
   let candidate = baseSlug;
@@ -71,6 +79,11 @@ async function generateUniqueSlug(
         slug: candidate,
         type,
         userId,
+        NOT: excludeCategoryId
+          ? {
+              id: excludeCategoryId,
+            }
+          : undefined,
       },
       select: {
         id: true,
@@ -84,6 +97,33 @@ async function generateUniqueSlug(
     suffix += 1;
     candidate = `${baseSlug}-${suffix}`;
   }
+}
+
+async function getCustomCategoryRecord(userId: string, categoryId: string) {
+  const category = await prisma.category.findFirst({
+    select: {
+      color: true,
+      icon: true,
+      id: true,
+      name: true,
+      scope: true,
+      slug: true,
+      systemKey: true,
+      type: true,
+      userId: true,
+    },
+    where: {
+      id: categoryId,
+      scope: "CUSTOM",
+      userId,
+    },
+  });
+
+  if (!category) {
+    throw new NotFoundError("The selected custom category was not found.");
+  }
+
+  return category;
 }
 
 export async function listAvailableCategories(userId: string) {
@@ -173,6 +213,100 @@ export async function createCategory(userId: string, input: CreateCategoryInput)
 
     throw error;
   }
+}
+
+export async function updateCustomCategory(
+  userId: string,
+  categoryId: string,
+  input: UpdateCategoryInput,
+) {
+  const category = await getCustomCategoryRecord(userId, categoryId);
+  const transactionCount = await prisma.transaction.count({
+    where: {
+      categoryId,
+      userId,
+    },
+  });
+
+  if (transactionCount > 0 && category.type !== input.type) {
+    throw new ValidationError(
+      "The category type cannot be changed while transactions are assigned to it.",
+      {
+        type: [
+          "Keep the current type or move existing transactions before changing it.",
+        ],
+      },
+    );
+  }
+
+  const slug = await generateUniqueSlug(userId, input.name, input.type, categoryId);
+
+  try {
+    const updatedCategory = await prisma.category.update({
+      data: {
+        color: input.color,
+        name: input.name,
+        slug,
+        type: input.type,
+      },
+      select: {
+        color: true,
+        icon: true,
+        id: true,
+        name: true,
+        scope: true,
+        slug: true,
+        systemKey: true,
+        type: true,
+      },
+      where: {
+        id: categoryId,
+      },
+    });
+
+    return toCategoryListItem(updatedCategory, {
+      totalAmountInCents: 0,
+      transactionCount,
+    });
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      "code" in error &&
+      error.code === "P2002"
+    ) {
+      throw new ConflictError("A category with this name already exists.");
+    }
+
+    throw error;
+  }
+}
+
+export async function deleteCustomCategory(userId: string, categoryId: string) {
+  await getCustomCategoryRecord(userId, categoryId);
+
+  const transactionCount = await prisma.transaction.count({
+    where: {
+      categoryId,
+      userId,
+    },
+  });
+
+  if (transactionCount > 0) {
+    throw new ConflictError(
+      "This category cannot be deleted while transactions are assigned to it.",
+    );
+  }
+
+  await prisma.category.delete({
+    where: {
+      id: categoryId,
+    },
+  });
+
+  return {
+    deleted: true,
+    id: categoryId,
+  };
 }
 
 export async function getCategoryForUser(userId: string, categoryId: string) {

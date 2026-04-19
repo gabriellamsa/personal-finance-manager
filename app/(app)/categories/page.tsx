@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 
-import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
@@ -9,9 +8,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { CategoryForm } from "@/features/categories/components/category-form";
+import { CategorySections } from "@/features/categories/components/category-sections";
 import { listAvailableCategories } from "@/features/categories/categories.service";
 import { requireCurrentUser } from "@/lib/auth/session";
-import { formatCurrency } from "@/lib/formatters/currency";
 
 export const metadata: Metadata = {
   title: "Categories",
@@ -20,11 +19,6 @@ export const metadata: Metadata = {
 export default async function CategoriesPage() {
   const user = await requireCurrentUser();
   const categories = await listAvailableCategories(user.id);
-
-  const incomeCategories = categories.filter((category) => category.type === "INCOME");
-  const expenseCategories = categories.filter(
-    (category) => category.type === "EXPENSE",
-  );
 
   return (
     <div className="space-y-8">
@@ -58,83 +52,7 @@ export default async function CategoriesPage() {
         </CardContent>
       </Card>
 
-      <section className="grid gap-6 xl:grid-cols-2">
-        <Card className="bg-card-strong">
-          <CardHeader>
-            <CardDescription>Income categories</CardDescription>
-            <CardTitle>{incomeCategories.length} categories available</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {incomeCategories.map((category) => (
-              <div
-                key={category.id}
-                className="rounded-[24px] border border-border bg-white/75 p-4"
-              >
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div className="space-y-2">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span
-                        className="h-3 w-3 rounded-full"
-                        style={{ backgroundColor: category.color }}
-                      />
-                      <p className="text-base font-semibold text-foreground">
-                        {category.name}
-                      </p>
-                      <Badge
-                        variant={category.scope === "SYSTEM" ? "neutral" : "success"}
-                      >
-                        {category.scope === "SYSTEM" ? "System" : "Custom"}
-                      </Badge>
-                    </div>
-                    <p className="text-sm text-foreground/62">
-                      {category.transactionCount} transactions •{" "}
-                      {formatCurrency(category.totalAmountInCents, user.currencyCode)}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-
-        <Card className="bg-card-strong">
-          <CardHeader>
-            <CardDescription>Expense categories</CardDescription>
-            <CardTitle>{expenseCategories.length} categories available</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {expenseCategories.map((category) => (
-              <div
-                key={category.id}
-                className="rounded-[24px] border border-border bg-white/75 p-4"
-              >
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div className="space-y-2">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span
-                        className="h-3 w-3 rounded-full"
-                        style={{ backgroundColor: category.color }}
-                      />
-                      <p className="text-base font-semibold text-foreground">
-                        {category.name}
-                      </p>
-                      <Badge
-                        variant={category.scope === "SYSTEM" ? "neutral" : "success"}
-                      >
-                        {category.scope === "SYSTEM" ? "System" : "Custom"}
-                      </Badge>
-                    </div>
-                    <p className="text-sm text-foreground/62">
-                      {category.transactionCount} transactions •{" "}
-                      {formatCurrency(category.totalAmountInCents, user.currencyCode)}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-      </section>
+      <CategorySections categories={categories} currencyCode={user.currencyCode} />
     </div>
   );
 }

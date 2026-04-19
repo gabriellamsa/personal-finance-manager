@@ -1,11 +1,20 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const registerUserMock = vi.hoisted(() => vi.fn());
+const requireApiUserMock = vi.hoisted(() => vi.fn());
+const changePasswordMock = vi.hoisted(() => vi.fn());
 const createSessionTokenMock = vi.hoisted(() => vi.fn());
 const setSessionCookieMock = vi.hoisted(() => vi.fn());
+const consumeAuthRateLimitMock = vi.hoisted(() => vi.fn());
+const resetAuthRateLimitMock = vi.hoisted(() => vi.fn());
+
+vi.mock("@/lib/auth/session", () => ({
+  createSessionToken: createSessionTokenMock,
+  requireApiUser: requireApiUserMock,
+  setSessionCookie: setSessionCookieMock,
+}));
 
 vi.mock("@/features/auth/auth.service", () => ({
-  registerUser: registerUserMock,
+  changePassword: changePasswordMock,
   toAuthenticatedUser: (user: {
     currencyCode: string;
     email: string;
@@ -21,28 +30,30 @@ vi.mock("@/features/auth/auth.service", () => ({
   }),
 }));
 
-vi.mock("@/lib/auth/session", () => ({
-  createSessionToken: createSessionTokenMock,
-  setSessionCookie: setSessionCookieMock,
+vi.mock("@/lib/security/auth-rate-limit", () => ({
+  consumeAuthRateLimit: consumeAuthRateLimitMock,
+  resetAuthRateLimit: resetAuthRateLimitMock,
 }));
 
-const routeModulePromise = import("@/app/api/auth/register/route");
+const routeModulePromise = import("@/app/api/auth/change-password/route");
 
-describe("POST /api/auth/register", () => {
+describe("POST /api/auth/change-password", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    requireApiUserMock.mockResolvedValue({
+      id: "user-1",
+    });
   });
 
   it("returns a validation response for malformed payloads", async () => {
     const { POST } = await routeModulePromise;
 
     const response = await POST(
-      new Request("http://localhost:3000/api/auth/register", {
+      new Request("http://localhost:3000/api/auth/change-password", {
         body: JSON.stringify({
-          confirmPassword: "",
-          email: "invalid-email",
-          name: "",
-          password: "short",
+          confirmNewPassword: "short",
+          currentPassword: "",
+          newPassword: "short",
         }),
         headers: {
           "content-type": "application/json",
@@ -56,13 +67,8 @@ describe("POST /api/auth/register", () => {
       error: {
         code: "VALIDATION_ERROR",
         fieldErrors: {
-          confirmPassword: [
-            "Confirm your password.",
-            "Passwords do not match.",
-          ],
-          email: ["Enter a valid email address."],
-          name: ["Name must be at least 2 characters long."],
-          password: [
+          currentPassword: ["Current password is required."],
+          newPassword: [
             "Password must be at least 8 characters long.",
             "Password must include at least one uppercase letter.",
             "Password must include at least one number.",
@@ -72,58 +78,54 @@ describe("POST /api/auth/register", () => {
       },
       success: false,
     });
-    expect(registerUserMock).not.toHaveBeenCalled();
+    expect(changePasswordMock).not.toHaveBeenCalled();
   });
 
-  it("creates a session and returns the authenticated user", async () => {
+  it("updates the password, refreshes the session, and returns the user", async () => {
     const { POST } = await routeModulePromise;
 
-    registerUserMock.mockResolvedValue({
+    changePasswordMock.mockResolvedValue({
       currencyCode: "USD",
       email: "jane@example.com",
       id: "user-1",
       name: "Jane Doe",
-      sessionVersion: 0,
+      sessionVersion: 1,
       timezone: "UTC",
     });
-    createSessionTokenMock.mockResolvedValue("signed-session-token");
+    createSessionTokenMock.mockResolvedValue("signed-token");
 
     const response = await POST(
-      new Request("http://localhost:3000/api/auth/register", {
+      new Request("http://localhost:3000/api/auth/change-password", {
         body: JSON.stringify({
-          confirmPassword: "Password123",
-          email: "jane@example.com",
-          name: "Jane Doe",
-          password: "Password123",
+          confirmNewPassword: "NewPassword123",
+          currentPassword: "Password123",
+          newPassword: "NewPassword123",
         }),
         headers: {
           "content-type": "application/json",
+          "x-forwarded-for": "127.0.0.1",
         },
         method: "POST",
       }),
     );
 
+    expect(consumeAuthRateLimitMock).toHaveBeenCalledWith(
+      "change-password",
+      "127.0.0.1:user-1",
+    );
     expect(createSessionTokenMock).toHaveBeenCalledWith({
       currencyCode: "USD",
       email: "jane@example.com",
       id: "user-1",
       name: "Jane Doe",
-      sessionVersion: 0,
+      sessionVersion: 1,
       timezone: "UTC",
     });
-    expect(setSessionCookieMock).toHaveBeenCalledWith("signed-session-token");
-    expect(response.status).toBe(201);
-    await expect(response.json()).resolves.toEqual({
-      data: {
-        user: {
-          currencyCode: "USD",
-          email: "jane@example.com",
-          id: "user-1",
-          name: "Jane Doe",
-          timezone: "UTC",
-        },
-      },
-      success: true,
-    });
+    expect(setSessionCookieMock).toHaveBeenCalledWith("signed-token");
+    expect(resetAuthRateLimitMock).toHaveBeenCalledWith(
+      "change-password",
+      "127.0.0.1:user-1",
+    );
+    expect(response.status).toBe(200);
   });
 });
