@@ -31,14 +31,28 @@ The project is actively implemented and already includes the core finance flow.
 - Standardized API success and error envelopes
 - Loading, empty, success, and error states across the main product flows
 - Profile editing with persisted currency and time zone preferences
+- Password change with session invalidation
+- In-memory throttling for sensitive auth routes
+- Custom category edit and protected delete flow
 - Strategic automated tests for core services and route handlers with Vitest
-- Basic CI workflow for lint, test, and production build validation
+- Playwright E2E coverage for critical product flows
+- CI workflow for lint, unit tests, E2E, migrations, and production build validation
 
 ### In Progress
 
 - Additional UX polish and deeper product refinement
 - README deployment examples for specific providers once a hosting target is chosen
 - Broader test coverage for more feature surfaces
+
+## Roadmap
+
+1. Account and session security hardening
+2. End-to-end coverage for critical product flows
+3. Full management for custom categories
+4. Dashboard period filters and richer reporting
+5. UX polish and accessibility review
+6. Deployment hardening and production runbook
+7. Observability and operational readiness
 
 ## Tech Stack
 
@@ -122,10 +136,13 @@ prisma/
 - `POST /api/auth/register`
 - `POST /api/auth/login`
 - `POST /api/auth/logout`
+- `POST /api/auth/change-password`
 - `GET /api/auth/session`
 - `PATCH /api/profile`
 - `GET /api/categories`
 - `POST /api/categories`
+- `PATCH /api/categories/[categoryId]`
+- `DELETE /api/categories/[categoryId]`
 - `GET /api/transactions`
 - `POST /api/transactions`
 - `PATCH /api/transactions/[transactionId]`
@@ -190,6 +207,7 @@ npm run start
 npm run lint
 npm run test
 npm run test:watch
+npm run test:e2e
 npm run db:generate
 npm run db:migrate
 npm run db:deploy
@@ -198,13 +216,16 @@ npm run db:seed
 
 ## Quality Assurance
 
-- Vitest covers critical service and route-handler behavior for authentication and transaction flows
-- GitHub Actions runs lint, test, and build on every push to `main` and on pull requests
+- Vitest covers critical service and route-handler behavior for authentication, profile, category, and transaction flows
+- Playwright validates sign-up, sign-in, profile updates, password changes, category management, and transaction CRUD in a real browser
+- GitHub Actions runs migrations, lint, unit tests, E2E, and build on every push to `main` and on pull requests
 
 ## Security Notes
 
 - Passwords are hashed with Argon2id before persistence
 - Sessions are stored in HTTP-only cookies
+- Password changes invalidate previously issued sessions
+- Sensitive auth routes are protected by in-memory throttling keyed by IP and account context
 - Sensitive routes are protected in both `proxy.ts` and server-side auth guards
 - Validation is enforced with Zod at the API boundary
 - Authorization checks always scope access by authenticated user id

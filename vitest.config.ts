@@ -14,6 +14,7 @@ export default defineConfig({
   test: {
     clearMocks: true,
     environment: "node",
+    exclude: ["e2e/**", "node_modules/**", ".next/**"],
     setupFiles: ["./vitest.setup.ts"],
   },
 });

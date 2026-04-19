@@ -9,6 +9,20 @@ on:
 jobs:
   quality:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: personal_finance_manager
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+        options: >-
+          --health-cmd="pg_isready -U postgres -d personal_finance_manager"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+        ports:
+          - 5432:5432
     env:
       APP_URL: http://localhost:3000
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/personal_finance_manager?schema=public
@@ -26,11 +40,20 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Apply database migrations
+        run: npm run db:deploy
+
       - name: Run lint
         run: npm run lint
 
       - name: Run tests
         run: npm run test
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Run end-to-end tests
+        run: npm run test:e2e
 
       - name: Run production build
         run: npm run build
