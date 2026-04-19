@@ -2,6 +2,7 @@ import { AUTH_ROUTES } from "@/lib/constants/auth";
 
 const protectedRoutePrefixes = [
   AUTH_ROUTES.dashboard,
+  AUTH_ROUTES.settings,
   "/transactions",
   "/categories",
 ] as const;
@@ -39,6 +40,10 @@ function getRouteLabel(pathname: string) {
 
   if (matchesRoutePrefix(pathname, AUTH_ROUTES.dashboard)) {
     return "your dashboard";
+  }
+
+  if (matchesRoutePrefix(pathname, AUTH_ROUTES.settings)) {
+    return "your settings";
   }
 
   return "the requested page";

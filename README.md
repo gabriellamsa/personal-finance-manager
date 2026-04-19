@@ -30,6 +30,7 @@ The project is actively implemented and already includes the core finance flow.
 - Dashboard balance, total income, total expenses, recent transactions, category chart, and monthly summary chart
 - Standardized API success and error envelopes
 - Loading, empty, success, and error states across the main product flows
+- Profile editing with persisted currency and time zone preferences
 - Strategic automated tests for core services and route handlers with Vitest
 - Basic CI workflow for lint, test, and production build validation
 
@@ -114,6 +115,7 @@ prisma/
 - `/dashboard`
 - `/transactions`
 - `/categories`
+- `/settings`
 
 ### API
 
@@ -121,6 +123,7 @@ prisma/
 - `POST /api/auth/login`
 - `POST /api/auth/logout`
 - `GET /api/auth/session`
+- `PATCH /api/profile`
 - `GET /api/categories`
 - `POST /api/categories`
 - `GET /api/transactions`
