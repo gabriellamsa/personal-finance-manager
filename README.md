@@ -1,168 +1,216 @@
-# Personal Finance Management System
+<h1 align="center">Personal Finance Manager</h1>
 
-A portfolio-grade full-stack finance application for secure account management, transaction tracking, category-based reporting, and dashboard analytics.
+<p align="center">
+  <strong>Full-stack personal finance application for authenticated accounts, transaction management, category-based reporting, and dashboard analytics.</strong>
+</p>
 
-## Product Scope
+<p align="center">
+  <img src="https://img.shields.io/badge/Next.js-16-111111?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js 16"/>
+  <img src="https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript"/>
+  <img src="https://img.shields.io/badge/PostgreSQL-17-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL"/>
+  <img src="https://img.shields.io/badge/Prisma-ORM-2D3748?style=for-the-badge&logo=prisma&logoColor=white" alt="Prisma"/>
+</p>
 
-The product is designed as a production-minded personal finance system where users can:
+<p align="center">
+  <img src="https://img.shields.io/badge/Vitest-tested-6E9F18?style=flat-square&logo=vitest&logoColor=white" alt="Vitest"/>
+  <img src="https://img.shields.io/badge/Playwright-E2E-2EAD33?style=flat-square&logo=playwright&logoColor=white" alt="Playwright"/>
+  <img src="https://img.shields.io/badge/GitHub_Actions-CI-2088FF?style=flat-square&logo=githubactions&logoColor=white" alt="GitHub Actions"/>
+</p>
 
-- Create an account and sign in securely
-- Record income and expenses
-- Organize transactions by default or custom categories
-- Filter historical data by type, category, and date range
-- Review totals, recent activity, and reporting charts in a dashboard
+---
 
-## Current Status
+## Overview
 
-The project is actively implemented and already includes the core finance flow.
+Personal Finance Manager is a portfolio project focused on application development, authenticated user flows, relational data modeling, API design, automated testing, and continuous integration.
 
-### Implemented
+The application allows users to manage income and expenses, organize transactions by category, and review financial data through a dashboard.
 
-- Credential-based authentication with Argon2id password hashing
-- Signed JWT session cookies stored as HTTP-only cookies
-- Protected route handling in both server-side data access and `proxy.ts`
-- User registration, login, logout, and authenticated session lookup
-- Prisma schema for users, categories, and transactions
-- Default seeded categories for income and expenses
+The core finance flow is implemented. Deployment hardening, observability, broader test coverage, and production operational documentation are still in progress.
+
+---
+
+## Features
+
+### Account and session management
+
+- User registration and login
+- Credential-based authentication
+- Argon2id password hashing
+- Signed JWT sessions stored in HTTP-only cookies
+- Logout and authenticated session lookup
+- Password changes with session invalidation
+- Profile editing
+- Currency and time zone preferences
+- In-memory throttling for sensitive authentication routes
+
+### Transaction management
+
+- Create, read, update, and delete transactions
+- Income and expense classification
+- Filtering by type, category, and date range
+- Pagination for transaction history
+- User-scoped authorization checks
+- Loading, empty, success, and error states
+
+### Category management
+
+- Default income and expense categories
 - Custom category creation
-- Transaction create, read, update, and delete flows
-- Transaction filters by type, category, date range, and page
-- Dashboard balance, total income, total expenses, recent transactions, category chart, and monthly summary chart
-- Standardized API success and error envelopes
-- Loading, empty, success, and error states across the main product flows
-- Profile editing with persisted currency and time zone preferences
-- Password change with session invalidation
-- In-memory throttling for sensitive auth routes
-- Custom category edit and protected delete flow
-- Strategic automated tests for core services and route handlers with Vitest
-- Playwright E2E coverage for critical product flows
-- CI workflow for lint, unit tests, E2E, migrations, and production build validation
+- Custom category editing
+- Protected category deletion
+- Validation for category-related requests
 
-### In Progress
+### Dashboard
 
-- Additional UX polish and deeper product refinement
-- README deployment examples for specific providers once a hosting target is chosen
-- Broader test coverage for more feature surfaces
+- Current balance
+- Total income
+- Total expenses
+- Recent transactions
+- Category reporting chart
+- Monthly summary chart
 
-## Roadmap
+---
 
-1. Account and session security hardening
-2. End-to-end coverage for critical product flows
-3. Full management for custom categories
-4. Dashboard period filters and richer reporting
-5. UX polish and accessibility review
-6. Deployment hardening and production runbook
-7. Observability and operational readiness
+## Technology Stack
 
-## Tech Stack
+| Area | Technologies |
+|---|---|
+| Application | Next.js 16 App Router, React 19, TypeScript |
+| Styling | Tailwind CSS 4 |
+| API layer | Next.js Route Handlers |
+| Database | PostgreSQL, Prisma |
+| Validation | Zod, React Hook Form |
+| Authentication | Custom JWT sessions, HTTP-only cookies |
+| Data visualization | Recharts |
+| Unit testing | Vitest |
+| End-to-end testing | Playwright |
+| Continuous integration | GitHub Actions |
 
-- Next.js 16 App Router
-- React 19
-- TypeScript
-- Tailwind CSS 4
-- Prisma
-- PostgreSQL
-- Zod
-- React Hook Form
-- Recharts
-- Custom JWT auth with HTTP-only cookies
+---
 
-## Architecture Decisions
+## Architecture
 
-### Why Next.js Route Handlers
+The application keeps the frontend, backend, authentication, and data access in one cohesive Next.js codebase.
 
-The application keeps frontend, backend, and authentication in a single cohesive codebase. Route Handlers provide a clean API boundary without introducing a second Node service prematurely.
+### Application boundary
 
-### Why Custom JWT Cookies
+Next.js Route Handlers provide the API boundary for authentication, profile, categories, and transactions without introducing a separate Node.js service.
 
-The project currently uses email/password authentication only. A custom JWT session layer keeps the authentication flow explicit and predictable while avoiding unnecessary library complexity for this scope.
+### Data access
 
-### Why Prisma + PostgreSQL
+Prisma provides typed database access and migrations for PostgreSQL.
 
-This stack gives strong type safety, explicit relational modeling, and a realistic migration workflow suitable for a production-style portfolio project.
+### Authentication
 
-### Domain Rules
+The project uses email/password authentication with:
 
-- Money is stored as integer cents, not floating-point decimals.
+- Argon2id password hashing
+- JWT session tokens
+- HTTP-only cookies
+- Server-side authentication guards
+- Protected route handling through `proxy.ts`
+- User-scoped authorization checks
+
+### Validation
+
+Zod schemas validate data at the API boundary before requests reach application services or database operations.
+
+---
+
+## Data Model
+
+| Entity | Purpose |
+|---|---|
+| User | Stores account and profile information |
+| Category | Stores system-defined and user-defined categories |
+| Transaction | Stores income and expense records linked to a user and category |
+
+Domain rules include:
+
+- Money is stored as integer cents.
 - Every transaction belongs to one user and one category.
 - Categories can be system-defined or user-defined.
-- Dashboard totals are always derived from persisted transaction data.
+- Dashboard totals are derived from persisted transaction data.
+- Users can only access their own protected data.
 
-## Folder Structure
+---
+
+## Project Structure
 
 ```text
 app/
-  (public)/
-  (auth)/
-  (app)/
-  api/
+├── (public)/
+├── (auth)/
+├── (app)/
+└── api/
+
 components/
-  shared/
-  ui/
 features/
-  auth/
-  categories/
-  dashboard/
-  transactions/
+├── auth/
+├── categories/
+├── dashboard/
+└── transactions/
+
 lib/
-  auth/
-  constants/
-  crypto/
-  db/
-  env/
-  formatters/
-  http/
-  utils/
+├── auth/
+├── constants/
+├── crypto/
+├── db/
+├── env/
+├── formatters/
+├── http/
+└── utils/
+
 prisma/
+e2e/
+tests/mocks/
+.github/workflows/
 ```
+
+---
 
 ## Main Routes
 
-### Public
+### Public pages
 
-- `/`
-- `/sign-in`
-- `/sign-up`
-
-### Protected
-
-- `/dashboard`
-- `/transactions`
-- `/categories`
-- `/settings`
-
-### API
-
-- `POST /api/auth/register`
-- `POST /api/auth/login`
-- `POST /api/auth/logout`
-- `POST /api/auth/change-password`
-- `GET /api/auth/session`
-- `PATCH /api/profile`
-- `GET /api/categories`
-- `POST /api/categories`
-- `PATCH /api/categories/[categoryId]`
-- `DELETE /api/categories/[categoryId]`
-- `GET /api/transactions`
-- `POST /api/transactions`
-- `PATCH /api/transactions/[transactionId]`
-- `DELETE /api/transactions/[transactionId]`
-
-## Environment Variables
-
-Create a `.env` file based on `.env.example`.
-
-```env
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/personal_finance_manager?schema=public"
-APP_URL="http://localhost:3000"
-JWT_SECRET="replace-with-a-long-random-secret-at-least-32-characters"
+```text
+/
+/sign-in
+/sign-up
 ```
 
-### Variable Notes
+### Protected pages
 
-- `DATABASE_URL`: PostgreSQL connection string used by Prisma
-- `APP_URL`: Base application URL for local execution
-- `JWT_SECRET`: Secret used to sign and verify session tokens
+```text
+/dashboard
+/transactions
+/categories
+/settings
+```
+
+### API routes
+
+```text
+POST   /api/auth/register
+POST   /api/auth/login
+POST   /api/auth/logout
+POST   /api/auth/change-password
+GET    /api/auth/session
+
+PATCH  /api/profile
+
+GET    /api/categories
+POST   /api/categories
+PATCH  /api/categories/[categoryId]
+DELETE /api/categories/[categoryId]
+
+GET    /api/transactions
+POST   /api/transactions
+PATCH  /api/transactions/[transactionId]
+DELETE /api/transactions/[transactionId]
+```
+
+---
 
 ## Local Setup
 
@@ -172,31 +220,57 @@ JWT_SECRET="replace-with-a-long-random-secret-at-least-32-characters"
 - npm
 - PostgreSQL
 
-### Install dependencies
+### 1. Install dependencies
 
 ```bash
 npm install
 ```
 
-### Run database migrations
+### 2. Configure environment variables
+
+Create a `.env` file based on `.env.example`.
+
+Required variables:
+
+```env
+DATABASE_URL=
+APP_URL=
+JWT_SECRET=
+```
+
+`JWT_SECRET` should be a long, random secret with at least 32 characters.
+
+### 3. Generate the Prisma client
+
+```bash
+npm run db:generate
+```
+
+### 4. Run database migrations
 
 ```bash
 npm run db:migrate
 ```
 
-### Seed default categories
+### 5. Seed default categories
 
 ```bash
 npm run db:seed
 ```
 
-### Start the development server
+### 6. Start the development server
 
 ```bash
 npm run dev
 ```
 
-The application will run at [http://localhost:3000](http://localhost:3000).
+The application will be available at:
+
+```text
+http://localhost:3000
+```
+
+---
 
 ## Available Scripts
 
@@ -214,44 +288,93 @@ npm run db:deploy
 npm run db:seed
 ```
 
+---
+
 ## Quality Assurance
 
-- Vitest covers critical service and route-handler behavior for authentication, profile, category, and transaction flows
-- Playwright validates sign-up, sign-in, profile updates, password changes, category management, and transaction CRUD in a real browser
-- GitHub Actions runs migrations, lint, unit tests, E2E, and build on every push to `main` and on pull requests
+The project includes automated checks for the main application flows.
+
+### Unit tests
+
+Vitest covers critical service and route-handler behaviour for:
+
+- Authentication
+- Profile updates
+- Category management
+- Transaction management
+
+### End-to-end tests
+
+Playwright covers critical browser flows including:
+
+- User registration
+- Sign-in and logout
+- Profile updates
+- Password changes
+- Category management
+- Transaction CRUD operations
+
+### Continuous integration
+
+GitHub Actions runs:
+
+- Database migrations
+- Linting
+- Unit tests
+- End-to-end tests
+- Production build validation
+
+The workflow runs on pushes to `main` and on pull requests.
+
+---
 
 ## Security Notes
 
-- Passwords are hashed with Argon2id before persistence
-- Sessions are stored in HTTP-only cookies
-- Password changes invalidate previously issued sessions
-- Sensitive auth routes are protected by in-memory throttling keyed by IP and account context
-- Sensitive routes are protected in both `proxy.ts` and server-side auth guards
-- Validation is enforced with Zod at the API boundary
-- Authorization checks always scope access by authenticated user id
+- Passwords are hashed with Argon2id before persistence.
+- Sessions are stored in HTTP-only cookies.
+- Password changes invalidate previously issued sessions.
+- Sensitive authentication routes use in-memory throttling.
+- API input is validated with Zod.
+- Protected routes use server-side authentication guards.
+- Authorization checks scope access by authenticated user ID.
+- No credentials or environment secrets are committed to the repository.
 
-## Deployment Notes
+---
 
-The codebase is deployment-ready, but no hosting provider integration is hardcoded yet.
+## Current Limitations
 
-To deploy this project, you will need:
+This project is not presented as a production deployment.
 
-- A Node-compatible hosting platform for the Next.js application
-- A PostgreSQL database for production
-- Production environment variables for `DATABASE_URL`, `APP_URL`, and `JWT_SECRET`
-- A strong random JWT secret and secure database credentials
+Current limitations include:
 
-### Recommended deployment sequence
+- No hosting provider integration is hardcoded.
+- Deployment hardening is not complete.
+- Observability and operational monitoring are not implemented.
+- Broader test coverage is still being expanded.
+- Accessibility and UX refinement remain ongoing.
+- A production runbook has not yet been completed.
 
-1. Provision a production PostgreSQL database.
-2. Configure production environment variables.
-3. Run `npm run db:deploy` during the deployment pipeline.
-4. Start the application with `npm run build` and `npm run start`, or use your platform's standard Next.js deployment flow.
+---
+
+## Roadmap
+
+- Expand automated test coverage
+- Add dashboard period filters
+- Improve reporting capabilities
+- Complete custom category management
+- Perform a deeper accessibility review
+- Add deployment hardening
+- Document a production runbook
+- Add observability and operational readiness checks
+
+---
 
 ## Engineering Goals
 
-- Strong type safety from UI to database access
-- Clear separation of concerns between pages, services, schemas, and infrastructure
-- Reusable UI primitives and domain services
-- Professional UX with deliberate loading, empty, success, and error states
-- Production-style project quality suitable for portfolio presentation
+- Maintain strong type safety from UI to database access.
+- Keep clear boundaries between pages, services, schemas, and infrastructure.
+- Use explicit relational data modeling.
+- Provide consistent API success and error responses.
+- Treat loading, empty, success, and error states as part of the product experience.
+- Validate changes through automated tests and continuous integration.
+- Keep the project technically honest about its current maturity.
