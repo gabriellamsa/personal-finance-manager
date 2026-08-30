@@ -25,7 +25,7 @@ Personal Finance Manager is a portfolio project focused on application developme
 
 The application allows users to manage income and expenses, organize transactions by category, and review financial data through a dashboard.
 
-The core finance flow and a vendor-neutral observability foundation are implemented. Deployment hardening, external telemetry, alerting, and broader test coverage are still in progress.
+The core finance flow, responsive product interface, regression suite, and vendor-neutral observability foundation are implemented and locally validated. Deployment hardening, external telemetry, and alerting remain environment-level follow-up work.
 
 ---
 
@@ -80,6 +80,7 @@ The [Application Support & Reliability Case Study](docs/application-support-case
 - Request duration through logs and `Server-Timing`
 - Reproducible PostgreSQL failure-and-recovery drill
 - Operational [observability guide](docs/observability.md) and [readiness failure runbook](docs/runbooks/readiness-check-failure.md)
+- Reproducible [validation and release-readiness report](docs/validation-report.md)
 
 ---
 
@@ -299,9 +300,13 @@ npm run dev
 npm run build
 npm run start
 npm run lint
+npm run typecheck
 npm run test
 npm run test:watch
 npm run test:e2e
+npm run audit:critical
+npm run verify
+npm run verify:full
 npm run ops:drill
 npm run db:generate
 npm run db:migrate
@@ -336,7 +341,8 @@ Playwright covers critical browser flows including:
 - Category management
 - Transaction CRUD operations
 - Liveness and readiness endpoint contracts
-- Automated PostgreSQL failure and recovery drill
+- Authenticated desktop and mobile navigation
+- Invalid-session redirect-loop regression protection
 
 ### Continuous integration
 
@@ -346,12 +352,14 @@ GitHub Actions runs:
 - Linting
 - Unit tests
 - End-to-end tests
+- Standalone TypeScript validation
 - Production build validation
+- Critical dependency advisory gate
 - Operational readiness drill against an intentionally unavailable local PostgreSQL port
 
 The workflow runs on pushes to `main` and on pull requests.
 
-Run `npm run build && npm run ops:drill` locally to reproduce the incident and recovery evidence without stopping or modifying the configured database. See the [verified drill report](docs/incident-reports/postgresql-readiness-drill.md).
+Run `npm run verify:full` locally to reproduce the complete quality, browser, build, dependency, incident, and recovery evidence without stopping or modifying the configured database. See the [validation report](docs/validation-report.md) and [verified drill report](docs/incident-reports/postgresql-readiness-drill.md).
 
 ---
 
@@ -378,19 +386,19 @@ Current limitations include:
 - Deployment hardening is not complete.
 - Observability currently uses process stdout/stderr and health endpoints; no external telemetry backend is configured.
 - Alerting, historical metrics, service-level objectives, and distributed tracing are not implemented.
-- Broader test coverage is still being expanded.
-- Accessibility and UX refinement remain ongoing.
+- Authentication throttling is process-local rather than shared across instances.
+- The project does not currently enforce a code-coverage percentage threshold.
+- Residual Prisma tooling and development-server advisories are documented in the validation report pending a compatible upstream remediation.
 - The current runbook covers readiness failure only; broader production incident procedures remain incomplete.
 
 ---
 
 ## Roadmap
 
-- Expand automated test coverage
+- Add an explicit coverage threshold after establishing a meaningful baseline
 - Add dashboard period filters
 - Improve reporting capabilities
-- Complete custom category management
-- Perform a deeper accessibility review
+- Add shared authentication throttling for multi-instance deployments
 - Add deployment hardening
 - Expand operational runbooks beyond readiness failures
 - Evaluate external telemetry, retention, alerting, and distributed tracing
