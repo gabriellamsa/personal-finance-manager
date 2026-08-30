@@ -1,5 +1,6 @@
 import type { Instrumentation } from "next";
 
+import { isExpectedClientDisconnect } from "@/lib/observability/error-classification";
 import { logEvent } from "@/lib/observability/logger";
 import {
   isValidRequestId,
@@ -23,6 +24,10 @@ export const onRequestError: Instrumentation.onRequestError = async (
   request,
   context,
 ) => {
+  if (isExpectedClientDisconnect(error)) {
+    return;
+  }
+
   const incomingRequestId = getHeaderValue(
     request.headers["x-request-id"] ?? request.headers["X-Request-Id"],
   );

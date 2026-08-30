@@ -2,8 +2,6 @@ import { NextResponse, type NextRequest } from "next/server";
 
 import {
   isProtectedAppPath,
-  isPublicAuthPath,
-  resolveAuthRedirectPath,
 } from "@/lib/auth/navigation";
 import { AUTH_ROUTES, SESSION_COOKIE_NAME } from "@/lib/constants/auth";
 
@@ -21,15 +19,6 @@ export function proxy(request: NextRequest) {
     signInUrl.searchParams.set("redirectTo", redirectTo);
 
     return NextResponse.redirect(signInUrl);
-  }
-
-  if (hasSessionCookie && isPublicAuthPath(pathname)) {
-    const redirectTo =
-      pathname === "/"
-        ? AUTH_ROUTES.dashboard
-        : resolveAuthRedirectPath(request.nextUrl.searchParams.get("redirectTo"));
-
-    return NextResponse.redirect(new URL(redirectTo, request.url));
   }
 
   return NextResponse.next();
