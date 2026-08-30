@@ -7,6 +7,16 @@ import {
   signUpUser,
 } from "./helpers/test-data";
 
+test("auth forms never fall back to query-string credential submission", async ({
+  page,
+}) => {
+  await page.goto("/sign-in");
+  await expect(page.locator("form")).toHaveAttribute("method", "post");
+
+  await page.goto("/sign-up");
+  await expect(page.locator("form")).toHaveAttribute("method", "post");
+});
+
 test("user can sign up, sign out, and sign in again", async ({ page }) => {
   const user = createTestUser();
 

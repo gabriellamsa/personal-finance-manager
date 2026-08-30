@@ -121,6 +121,7 @@ export function CategoryForm({
   return (
     <form
       className="grid gap-4 md:grid-cols-[1.3fr_0.8fr_0.6fr_auto]"
+      method="post"
       onSubmit={form.handleSubmit(handleSubmit)}
       noValidate
     >

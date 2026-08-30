@@ -99,7 +99,12 @@ export function SignUpForm({ feedback, redirectTo }: SignUpFormProps) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form className="space-y-5" onSubmit={form.handleSubmit(handleSubmit)} noValidate>
+        <form
+          className="space-y-5"
+          method="post"
+          onSubmit={form.handleSubmit(handleSubmit)}
+          noValidate
+        >
           {feedback ? (
             <FormMessage tone={feedback.tone}>
               <p className="font-semibold">{feedback.title}</p>

@@ -138,6 +138,7 @@ export function ProfileForm({
     <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
       <form
         className="grid gap-4 md:grid-cols-2"
+        method="post"
         onSubmit={form.handleSubmit(handleSubmit)}
         noValidate
       >

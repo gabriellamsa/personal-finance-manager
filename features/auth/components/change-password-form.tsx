@@ -99,7 +99,12 @@ export function ChangePasswordForm() {
   }
 
   return (
-    <form className="space-y-4" onSubmit={form.handleSubmit(handleSubmit)} noValidate>
+    <form
+      className="space-y-4"
+      method="post"
+      onSubmit={form.handleSubmit(handleSubmit)}
+      noValidate
+    >
       <div className="space-y-2">
         <Label htmlFor="current-password">Current password</Label>
         <Input
