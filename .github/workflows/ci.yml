@@ -29,10 +29,10 @@ jobs:
       JWT_SECRET: ci-jwt-secret-with-at-least-thirty-two-characters
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           cache: npm
           node-version: 20
@@ -46,8 +46,14 @@ jobs:
       - name: Run lint
         run: npm run lint
 
+      - name: Run type checks
+        run: npm run typecheck
+
       - name: Run tests
         run: npm run test
+
+      - name: Block critical dependency vulnerabilities
+        run: npm run audit:critical
 
       - name: Install Playwright browser
         run: npx playwright install --with-deps chromium
@@ -57,3 +63,6 @@ jobs:
 
       - name: Run production build
         run: npm run build
+
+      - name: Run operational readiness drill
+        run: npm run ops:drill

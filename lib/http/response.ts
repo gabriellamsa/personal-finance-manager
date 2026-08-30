@@ -3,6 +3,21 @@ import { Prisma } from "@prisma/client";
 import { ZodError } from "zod";
 
 import { AppError, TooManyRequestsError } from "@/lib/http/errors";
+import { logEvent } from "@/lib/observability/logger";
+import { getRequestContext } from "@/lib/observability/request-context";
+
+function getErrorLogContext() {
+  const context = getRequestContext();
+
+  return context
+    ? {
+        method: context.method,
+        path: context.path,
+        requestId: context.requestId,
+        route: context.route,
+      }
+    : {};
+}
 
 export type ApiSuccess<T> = {
   data: T;
@@ -97,6 +112,15 @@ export function handleRouteError(error: unknown) {
     }
 
     if (error.code === "P2021" || error.code === "P2022") {
+      logEvent({
+        ...getErrorLogContext(),
+        error,
+        event: "application.error",
+        level: "error",
+        message: "Database schema is unavailable",
+        statusCode: 503,
+      });
+
       return jsonError(
         "DATABASE_SCHEMA_NOT_READY",
         process.env.NODE_ENV === "development"
@@ -108,6 +132,15 @@ export function handleRouteError(error: unknown) {
   }
 
   if (error instanceof Prisma.PrismaClientInitializationError) {
+    logEvent({
+      ...getErrorLogContext(),
+      error,
+      event: "application.error",
+      level: "error",
+      message: "Database connection is unavailable",
+      statusCode: 503,
+    });
+
     return jsonError(
       "DATABASE_UNAVAILABLE",
       process.env.NODE_ENV === "development"
@@ -117,7 +150,14 @@ export function handleRouteError(error: unknown) {
     );
   }
 
-  console.error("Unhandled route error.", error);
+  logEvent({
+    ...getErrorLogContext(),
+    error,
+    event: "application.unhandled_error",
+    level: "error",
+    message: "Unhandled route error",
+    statusCode: 500,
+  });
 
   return jsonError(
     "INTERNAL_SERVER_ERROR",

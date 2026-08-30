@@ -15,20 +15,27 @@ test("user can manage categories, transactions, profile, and password", async ({
   try {
     await signUpUser(page, user);
     await expect(page).toHaveURL(/\/dashboard$/);
+    await page.waitForLoadState("networkidle");
 
     await page.goto("/categories");
     await page.getByLabel("Category name").fill("Pet Care");
     await page.getByLabel("Type").selectOption("EXPENSE");
+    await page.getByRole("radio", { name: "Select Graphite" }).click();
     await page.getByRole("button", { name: "Create category" }).click();
     await expect(
       page.getByText("Custom category created successfully."),
     ).toBeVisible();
     await expect(page.getByText("Pet Care")).toBeVisible();
+    await page.waitForLoadState("networkidle");
 
     await page.getByRole("button", { name: "Edit" }).click();
+    await expect(
+      page.getByRole("radio", { name: "Select Graphite" }).last(),
+    ).toBeChecked();
     await page.getByLabel(/Category name/i).last().fill("Pet Supplies");
     await page.getByRole("button", { name: "Save changes" }).click();
     await expect(page.getByText("Pet Supplies")).toBeVisible();
+    await page.waitForLoadState("networkidle");
 
     await page.goto("/transactions");
     await page.locator("#description-create-new").fill("Vet visit");
@@ -41,7 +48,6 @@ test("user can manage categories, transactions, profile, and password", async ({
     await expect(
       page.getByText("Transaction created successfully."),
     ).toBeVisible();
-    await page.reload();
     await expect(page.getByText("Vet visit")).toBeVisible();
 
     await page.getByRole("button", { name: "Edit" }).first().click();
@@ -53,7 +59,6 @@ test("user can manage categories, transactions, profile, and password", async ({
     );
     await page.getByRole("button", { name: "Save changes" }).click();
     await updateTransactionResponse;
-    await page.reload();
     await expect(page.getByText("Vet appointment")).toBeVisible();
 
     page.once("dialog", (dialog) => dialog.accept());
@@ -64,7 +69,6 @@ test("user can manage categories, transactions, profile, and password", async ({
     );
     await page.getByRole("button", { name: "Delete" }).first().click();
     await deleteTransactionResponse;
-    await page.reload();
     await expect(page.getByText("Vet appointment")).not.toBeVisible();
 
     await page.goto("/settings");
@@ -87,8 +91,11 @@ test("user can manage categories, transactions, profile, and password", async ({
       ),
       page.getByRole("button", { name: "Save changes" }).first().click(),
     ]);
-    await page.reload();
-    await expect(page.getByText("BRL / America/Sao_Paulo")).toBeVisible();
+    await expect(
+      page
+        .getByRole("complementary")
+        .getByText("BRL / America/Sao_Paulo"),
+    ).toBeVisible();
 
     await page.getByLabel("Current password").fill(user.password);
     await page.getByLabel("New password", { exact: true }).fill(updatedPassword);
@@ -108,6 +115,7 @@ test("user can manage categories, transactions, profile, and password", async ({
         "Password updated successfully. Existing sessions were invalidated.",
       ),
     ).toBeVisible();
+    await page.waitForLoadState("networkidle");
 
     await page.getByRole("button", { name: "Sign out" }).click();
     await expect(page).toHaveURL(/\/sign-in/);
@@ -116,6 +124,7 @@ test("user can manage categories, transactions, profile, and password", async ({
     await page.getByLabel("Password", { exact: true }).fill(updatedPassword);
     await page.getByRole("button", { name: "Sign in" }).click();
     await expect(page).toHaveURL(/\/dashboard$/);
+    await page.waitForLoadState("networkidle");
 
     await page.goto("/categories");
     page.once("dialog", (dialog) => dialog.accept());
@@ -127,6 +136,62 @@ test("user can manage categories, transactions, profile, and password", async ({
     await page.getByRole("button", { name: "Delete" }).first().click();
     await deleteCategoryResponse;
     await expect(page.getByText("Pet Supplies")).not.toBeVisible();
+    await page.waitForLoadState("networkidle");
+  } finally {
+    await cleanupTestUser(user.email);
+  }
+});
+
+test("authenticated navigation stays usable without horizontal overflow", async ({
+  page,
+}) => {
+  const user = createTestUser();
+
+  try {
+    await page.setViewportSize({ height: 844, width: 390 });
+    await signUpUser(page, user);
+
+    const mobileNavigation = page.getByRole("navigation", {
+      name: "Mobile navigation",
+    });
+    await expect(mobileNavigation).toBeVisible();
+    await expect(
+      page.getByRole("navigation", { name: "Primary navigation" }),
+    ).toBeHidden();
+
+    for (const destination of [
+      { label: "Dashboard", path: "/dashboard" },
+      { label: "Transactions", path: "/transactions" },
+      { label: "Categories", path: "/categories" },
+      { label: "Settings", path: "/settings" },
+    ]) {
+      await mobileNavigation.getByRole("link", { name: destination.label }).click();
+      await expect(page).toHaveURL(new RegExp(`${destination.path}$`));
+      await page.waitForLoadState("networkidle");
+      await expect(
+        mobileNavigation.getByRole("link", { name: destination.label }),
+      ).toHaveAttribute("aria-current", "page");
+      await expect
+        .poll(() =>
+          page.evaluate(
+            () => document.documentElement.scrollWidth <= window.innerWidth,
+          ),
+        )
+        .toBe(true);
+    }
+
+    await page.setViewportSize({ height: 900, width: 1024 });
+    await expect(mobileNavigation).toBeHidden();
+    await expect(
+      page.getByRole("navigation", { name: "Primary navigation" }),
+    ).toBeVisible();
+    await expect
+      .poll(() =>
+        page.evaluate(
+          () => document.documentElement.scrollWidth <= window.innerWidth,
+        ),
+      )
+      .toBe(true);
   } finally {
     await cleanupTestUser(user.email);
   }

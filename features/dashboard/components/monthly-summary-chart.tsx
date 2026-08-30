@@ -43,14 +43,18 @@ export function MonthlySummaryChart({
 
   return (
     <div className="h-[300px]">
-      <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer
+        height="100%"
+        initialDimension={{ height: 300, width: 760 }}
+        width="100%"
+      >
         <BarChart data={data}>
-          <CartesianGrid stroke="rgba(20,33,61,0.08)" vertical={false} />
+          <CartesianGrid stroke="rgba(57,62,70,0.14)" vertical={false} />
           <XAxis
             dataKey="label"
             axisLine={false}
             tickLine={false}
-            tick={{ fill: "#6b7280", fontSize: 12 }}
+            tick={{ fill: "#69717D", fontSize: 12 }}
           />
           <YAxis
             axisLine={false}
@@ -63,12 +67,12 @@ export function MonthlySummaryChart({
               }).format(Number(value) / 100)
             }
             tickLine={false}
-            tick={{ fill: "#6b7280", fontSize: 12 }}
+            tick={{ fill: "#69717D", fontSize: 12 }}
             width={92}
           />
           <Tooltip formatter={formatTooltipValue} />
-          <Bar dataKey="incomeInCents" fill="#0F766E" radius={[10, 10, 0, 0]} />
-          <Bar dataKey="expenseInCents" fill="#B91C1C" radius={[10, 10, 0, 0]} />
+          <Bar dataKey="incomeInCents" fill="#FFD369" radius={[4, 4, 0, 0]} />
+          <Bar dataKey="expenseInCents" fill="#393E46" radius={[4, 4, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </div>

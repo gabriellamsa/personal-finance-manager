@@ -6,7 +6,7 @@ export const createCategorySchema = z.object({
   color: z
     .string()
     .regex(/^#[0-9A-Fa-f]{6}$/, "Choose a valid hex color.")
-    .default("#0F766E"),
+    .default("#FFD369"),
   name: z
     .string()
     .trim()

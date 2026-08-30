@@ -4,7 +4,8 @@ import {
 } from "@/features/auth/auth.service";
 import { signInSchema } from "@/features/auth/auth.schemas";
 import { createSessionToken, setSessionCookie } from "@/lib/auth/session";
-import { handleRouteError, jsonSuccess } from "@/lib/http/response";
+import { jsonSuccess } from "@/lib/http/response";
+import { withRouteObservability } from "@/lib/observability/route-observability";
 import {
   consumeAuthRateLimit,
   resetAuthRateLimit,
@@ -13,24 +14,22 @@ import { getClientIp } from "@/lib/security/request";
 
 export const runtime = "nodejs";
 
-export async function POST(request: Request) {
-  try {
-    const payload = signInSchema.parse(await request.json());
-    const rateLimitKey = `${getClientIp(request)}:${payload.email}`;
+async function POSTHandler(request: Request) {
+  const payload = signInSchema.parse(await request.json());
+  const rateLimitKey = `${getClientIp(request)}:${payload.email}`;
 
-    consumeAuthRateLimit("login", rateLimitKey);
+  consumeAuthRateLimit("login", rateLimitKey);
 
-    const user = await authenticateUser(payload);
-    const token = await createSessionToken(user);
-    const publicUser = toAuthenticatedUser(user);
+  const user = await authenticateUser(payload);
+  const token = await createSessionToken(user);
+  const publicUser = toAuthenticatedUser(user);
 
-    await setSessionCookie(token);
-    resetAuthRateLimit("login", rateLimitKey);
+  await setSessionCookie(token);
+  resetAuthRateLimit("login", rateLimitKey);
 
-    return jsonSuccess({
-      user: publicUser,
-    });
-  } catch (error) {
-    return handleRouteError(error);
-  }
+  return jsonSuccess({
+    user: publicUser,
+  });
 }
+
+export const POST = withRouteObservability("/api/auth/login", POSTHandler);

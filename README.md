@@ -21,11 +21,11 @@
 
 ## Overview
 
-Personal Finance Manager is a portfolio project focused on application development, authenticated user flows, relational data modeling, API design, automated testing, and continuous integration.
+Personal Finance Manager is a portfolio project focused on application development, authenticated user flows, relational data modeling, API design, automated testing, continuous integration, and operational readiness.
 
 The application allows users to manage income and expenses, organize transactions by category, and review financial data through a dashboard.
 
-The core finance flow is implemented. Deployment hardening, observability, broader test coverage, and production operational documentation are still in progress.
+The core finance flow, responsive product interface, regression suite, and vendor-neutral observability foundation are implemented and locally validated. Deployment hardening, external telemetry, and alerting remain environment-level follow-up work.
 
 ---
 
@@ -68,6 +68,19 @@ The core finance flow is implemented. Deployment hardening, observability, broad
 - Recent transactions
 - Category reporting chart
 - Monthly summary chart
+
+### Operational Readiness & Application Support
+
+The [Application Support & Reliability Case Study](docs/application-support-case-study.md) documents how the existing finance application evolved from a functional product into a system with explicit operational health, request correlation, failure visibility, automated validation, and support procedures.
+
+- Separate liveness and readiness health checks
+- Real read-only PostgreSQL readiness verification with a bounded timeout
+- Structured JSON server logs with defensive redaction
+- Validated request IDs and response correlation headers across API routes
+- Request duration through logs and `Server-Timing`
+- Reproducible PostgreSQL failure-and-recovery drill
+- Operational [observability guide](docs/observability.md) and [readiness failure runbook](docs/runbooks/readiness-check-failure.md)
+- Reproducible [validation and release-readiness report](docs/validation-report.md)
 
 ---
 
@@ -159,10 +172,13 @@ lib/
 ├── env/
 ├── formatters/
 ├── http/
+├── health/
+├── observability/
 └── utils/
 
 prisma/
 e2e/
+docs/
 tests/mocks/
 .github/workflows/
 ```
@@ -208,7 +224,12 @@ GET    /api/transactions
 POST   /api/transactions
 PATCH  /api/transactions/[transactionId]
 DELETE /api/transactions/[transactionId]
+
+GET    /api/health/live
+GET    /api/health/ready
 ```
+
+Health endpoints are public, uncached, and intentionally expose only safe operational metadata. `/api/health/live` confirms the current process can respond without accessing PostgreSQL. `/api/health/ready` validates required configuration and performs a read-only PostgreSQL connectivity check. See the [observability guide](docs/observability.md) for contracts, correlation behavior, log fields, and local verification.
 
 ---
 
@@ -279,9 +300,14 @@ npm run dev
 npm run build
 npm run start
 npm run lint
+npm run typecheck
 npm run test
 npm run test:watch
 npm run test:e2e
+npm run audit:critical
+npm run verify
+npm run verify:full
+npm run ops:drill
 npm run db:generate
 npm run db:migrate
 npm run db:deploy
@@ -302,6 +328,7 @@ Vitest covers critical service and route-handler behaviour for:
 - Profile updates
 - Category management
 - Transaction management
+- Health checks, readiness timeout, request correlation, and log redaction
 
 ### End-to-end tests
 
@@ -313,6 +340,9 @@ Playwright covers critical browser flows including:
 - Password changes
 - Category management
 - Transaction CRUD operations
+- Liveness and readiness endpoint contracts
+- Authenticated desktop and mobile navigation
+- Invalid-session redirect-loop regression protection
 
 ### Continuous integration
 
@@ -322,9 +352,14 @@ GitHub Actions runs:
 - Linting
 - Unit tests
 - End-to-end tests
+- Standalone TypeScript validation
 - Production build validation
+- Critical dependency advisory gate
+- Operational readiness drill against an intentionally unavailable local PostgreSQL port
 
 The workflow runs on pushes to `main` and on pull requests.
+
+Run `npm run verify:full` locally to reproduce the complete quality, browser, build, dependency, incident, and recovery evidence without stopping or modifying the configured database. See the [validation report](docs/validation-report.md) and [verified drill report](docs/incident-reports/postgresql-readiness-drill.md).
 
 ---
 
@@ -349,23 +384,24 @@ Current limitations include:
 
 - No hosting provider integration is hardcoded.
 - Deployment hardening is not complete.
-- Observability and operational monitoring are not implemented.
-- Broader test coverage is still being expanded.
-- Accessibility and UX refinement remain ongoing.
-- A production runbook has not yet been completed.
+- Observability currently uses process stdout/stderr and health endpoints; no external telemetry backend is configured.
+- Alerting, historical metrics, service-level objectives, and distributed tracing are not implemented.
+- Authentication throttling is process-local rather than shared across instances.
+- The project does not currently enforce a code-coverage percentage threshold.
+- Residual Prisma tooling and development-server advisories are documented in the validation report pending a compatible upstream remediation.
+- The current runbook covers readiness failure only; broader production incident procedures remain incomplete.
 
 ---
 
 ## Roadmap
 
-- Expand automated test coverage
+- Add an explicit coverage threshold after establishing a meaningful baseline
 - Add dashboard period filters
 - Improve reporting capabilities
-- Complete custom category management
-- Perform a deeper accessibility review
+- Add shared authentication throttling for multi-instance deployments
 - Add deployment hardening
-- Document a production runbook
-- Add observability and operational readiness checks
+- Expand operational runbooks beyond readiness failures
+- Evaluate external telemetry, retention, alerting, and distributed tracing
 
 ---
 

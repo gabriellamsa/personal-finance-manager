@@ -78,7 +78,6 @@ export function SignUpForm({ feedback, redirectTo }: SignUpFormProps) {
 
       startTransition(() => {
         router.replace(destination);
-        router.refresh();
       });
     } catch (error) {
       setFormError(
@@ -91,7 +90,7 @@ export function SignUpForm({ feedback, redirectTo }: SignUpFormProps) {
   }
 
   return (
-    <Card className="w-full max-w-md">
+    <Card className="w-full max-w-md border-0 bg-transparent p-0">
       <CardHeader>
         <CardTitle>Create your account</CardTitle>
         <CardDescription>
@@ -99,7 +98,12 @@ export function SignUpForm({ feedback, redirectTo }: SignUpFormProps) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form className="space-y-5" onSubmit={form.handleSubmit(handleSubmit)} noValidate>
+        <form
+          className="space-y-5"
+          method="post"
+          onSubmit={form.handleSubmit(handleSubmit)}
+          noValidate
+        >
           {feedback ? (
             <FormMessage tone={feedback.tone}>
               <p className="font-semibold">{feedback.title}</p>
@@ -187,7 +191,7 @@ export function SignUpForm({ feedback, redirectTo }: SignUpFormProps) {
           <p className="text-sm text-foreground/62">
             Already have an account?{" "}
             <Link
-              className="font-semibold text-accent"
+              className="font-semibold text-foreground underline decoration-accent decoration-2 underline-offset-4"
               href={buildAuthRouteHref(AUTH_ROUTES.signIn, redirectTo)}
             >
               Sign in

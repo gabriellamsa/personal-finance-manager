@@ -166,7 +166,12 @@ export function TransactionForm({
   }
 
   return (
-    <form className="grid gap-4 md:grid-cols-2" onSubmit={form.handleSubmit(handleSubmit)} noValidate>
+    <form
+      className="grid gap-4 md:grid-cols-2"
+      method="post"
+      onSubmit={form.handleSubmit(handleSubmit)}
+      noValidate
+    >
       <div className="space-y-2 md:col-span-2">
         <Label htmlFor={`description-${mode}-${transaction?.id ?? "new"}`}>
           Description

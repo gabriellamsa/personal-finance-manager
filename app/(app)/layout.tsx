@@ -21,28 +21,43 @@ export default async function AppLayout({ children }: AppLayoutProps) {
   const user = await requireCurrentUser();
 
   return (
-    <main className="min-h-screen px-6 py-8 sm:px-8">
-      <div className="mx-auto grid min-h-[calc(100vh-4rem)] max-w-7xl gap-6 lg:grid-cols-[280px_1fr]">
-        <aside className="flex flex-col justify-between rounded-[32px] border border-border bg-card p-6 shadow-[0_20px_60px_rgba(20,33,61,0.08)] backdrop-blur">
+    <main className="min-h-screen">
+      <header className="sticky top-0 z-30 border-b border-border bg-card-strong lg:hidden">
+        <div className="flex items-center justify-between px-4 py-3 sm:px-6">
+          <Logo />
+          <div className="min-w-0 text-right">
+            <p className="max-w-36 truncate text-xs font-semibold text-foreground">
+              {user.name}
+            </p>
+            <p className="font-mono text-[10px] text-foreground/55">
+              {user.currencyCode} / {user.timezone}
+            </p>
+          </div>
+        </div>
+        <AppSidebarNav items={navigationItems} variant="mobile" />
+      </header>
+
+      <div className="mx-auto grid min-h-screen max-w-[1440px] lg:grid-cols-[248px_1fr]">
+        <aside className="hidden flex-col justify-between border-r border-border bg-card px-5 py-6 lg:sticky lg:top-0 lg:flex lg:h-screen">
           <div className="space-y-8">
             <Logo />
 
             <AppSidebarNav items={navigationItems} />
           </div>
 
-          <div className="space-y-4 rounded-[24px] border border-border bg-white/70 p-4">
+          <div className="space-y-4 border-t border-border pt-5">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-foreground/42">
                 Signed in as
               </p>
-              <p className="mt-2 text-base font-semibold text-foreground">
+              <p className="mt-2 text-sm font-semibold text-foreground">
                 {user.name}
               </p>
               <p className="text-sm text-foreground/62">{user.email}</p>
-              <p className="mt-2 text-sm text-foreground/62">
+              <p className="mt-2 font-mono text-xs text-foreground/62">
                 {user.currencyCode} / {user.timezone}
               </p>
-              <p className="text-xs text-foreground/52">
+              <p className="mt-1 font-mono text-[11px] text-foreground/52">
                 Current profile time: {formatDateTime(new Date(), user.timezone)}
               </p>
             </div>
@@ -51,8 +66,18 @@ export default async function AppLayout({ children }: AppLayoutProps) {
           </div>
         </aside>
 
-        <section className="rounded-[32px] border border-border bg-card p-6 shadow-[0_20px_60px_rgba(20,33,61,0.08)] backdrop-blur sm:p-8">
+        <section className="min-w-0 bg-background px-4 py-6 sm:px-8 sm:py-8 lg:px-10 lg:py-10">
           {children}
+
+          <footer className="mt-10 flex items-center justify-between gap-4 border-t border-border pt-5 lg:hidden">
+            <div className="min-w-0">
+              <p className="truncate text-sm font-semibold text-foreground">
+                {user.name}
+              </p>
+              <p className="truncate text-xs text-foreground/55">{user.email}</p>
+            </div>
+            <SignOutButton />
+          </footer>
         </section>
       </div>
     </main>

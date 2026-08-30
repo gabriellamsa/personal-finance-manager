@@ -1,15 +1,15 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f4efe6;
-  --foreground: #14213d;
-  --muted: #6b7280;
-  --card: rgba(255, 253, 248, 0.88);
-  --card-strong: #fffdfa;
-  --border: rgba(20, 33, 61, 0.12);
-  --accent: #0f766e;
-  --accent-foreground: #f8fafc;
-  --danger: #b91c1c;
+  --background: #eeeeee;
+  --foreground: #222831;
+  --muted: #393e46;
+  --card: #f7f7f7;
+  --card-strong: #ffffff;
+  --border: rgba(57, 62, 70, 0.18);
+  --accent: #ffd369;
+  --accent-foreground: #222831;
+  --danger: #b63a3a;
 }
 
 @theme inline {
@@ -22,8 +22,8 @@
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-danger: var(--danger);
-  --font-sans: var(--font-plus-jakarta-sans);
-  --font-mono: var(--font-ibm-plex-mono);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
 }
 
 * {
@@ -38,11 +38,9 @@ html,
 body {
   margin: 0;
   min-height: 100%;
-  background:
-    radial-gradient(circle at top, rgba(15, 118, 110, 0.15), transparent 32%),
-    linear-gradient(180deg, #f9f4ec 0%, #f4efe6 100%);
+  background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-plus-jakarta-sans), sans-serif;
+  font-family: var(--font-geist-sans), sans-serif;
 }
 
 body {
@@ -62,13 +60,9 @@ select {
 }
 
 ::selection {
-  background: rgba(15, 118, 110, 0.18);
+  background: rgba(255, 211, 105, 0.58);
 }
 
 .app-shell-grid {
-  background-image:
-    linear-gradient(rgba(20, 33, 61, 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(20, 33, 61, 0.035) 1px, transparent 1px);
-  background-position: center;
-  background-size: 32px 32px;
+  background: var(--background);
 }

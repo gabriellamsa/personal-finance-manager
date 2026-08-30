@@ -4,7 +4,8 @@ import {
   updateCustomCategory,
 } from "@/features/categories/categories.service";
 import { requireApiUser } from "@/lib/auth/session";
-import { handleRouteError, jsonSuccess } from "@/lib/http/response";
+import { jsonSuccess } from "@/lib/http/response";
+import { withRouteObservability } from "@/lib/observability/route-observability";
 
 export const runtime = "nodejs";
 
@@ -14,35 +15,36 @@ type CategoryRouteContext = {
   }>;
 };
 
-export async function PATCH(
+async function PATCHHandler(
   request: Request,
   context: CategoryRouteContext,
 ) {
-  try {
-    const user = await requireApiUser();
-    const payload = updateCategorySchema.parse(await request.json());
-    const { categoryId } = await context.params;
-    const category = await updateCustomCategory(user.id, categoryId, payload);
+  const user = await requireApiUser();
+  const payload = updateCategorySchema.parse(await request.json());
+  const { categoryId } = await context.params;
+  const category = await updateCustomCategory(user.id, categoryId, payload);
 
-    return jsonSuccess({
-      category,
-    });
-  } catch (error) {
-    return handleRouteError(error);
-  }
+  return jsonSuccess({
+    category,
+  });
 }
 
-export async function DELETE(
+async function DELETEHandler(
   _request: Request,
   context: CategoryRouteContext,
 ) {
-  try {
-    const user = await requireApiUser();
-    const { categoryId } = await context.params;
-    const result = await deleteCustomCategory(user.id, categoryId);
+  const user = await requireApiUser();
+  const { categoryId } = await context.params;
+  const result = await deleteCustomCategory(user.id, categoryId);
 
-    return jsonSuccess(result);
-  } catch (error) {
-    return handleRouteError(error);
-  }
+  return jsonSuccess(result);
 }
+
+export const PATCH = withRouteObservability(
+  "/api/categories/[categoryId]",
+  PATCHHandler,
+);
+export const DELETE = withRouteObservability(
+  "/api/categories/[categoryId]",
+  DELETEHandler,
+);

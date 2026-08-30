@@ -53,7 +53,12 @@ const supportedCurrencyCodes = orderByPriority(
 );
 
 const supportedTimeZones = orderByPriority(
-  getSupportedValues("timeZone", COMMON_TIME_ZONES),
+  Array.from(
+    new Set([
+      ...COMMON_TIME_ZONES,
+      ...getSupportedValues("timeZone", COMMON_TIME_ZONES),
+    ]),
+  ),
   COMMON_TIME_ZONES,
 );
 

@@ -41,7 +41,7 @@ function CategorySection({
         <CardDescription>{title}</CardDescription>
         <CardTitle>{categories.length} categories available</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="divide-y divide-border border-y border-border">
         {categories.map((category) => {
           const isEditing = editingCategoryId === category.id;
           const isCustomCategory = category.scope === "CUSTOM";
@@ -49,7 +49,7 @@ function CategorySection({
           return (
             <div
               key={category.id}
-              className="rounded-[24px] border border-border bg-white/75 p-4"
+              className="py-4"
             >
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div className="space-y-2">
@@ -75,7 +75,7 @@ function CategorySection({
                   <div className="flex flex-wrap gap-2">
                     <button
                       type="button"
-                      className="rounded-2xl border border-border px-4 py-2 text-sm font-medium text-foreground/72 transition hover:bg-white hover:text-foreground"
+                      className="rounded-lg border border-border px-3 py-2 text-sm font-medium text-foreground/72 transition-colors hover:bg-foreground hover:text-white"
                       onClick={() => onToggleEditing(category.id)}
                     >
                       {isEditing ? "Close editor" : "Edit"}
@@ -86,7 +86,7 @@ function CategorySection({
               </div>
 
               {isEditing ? (
-                <div className="mt-5 rounded-[22px] border border-border bg-card p-5">
+                <div className="mt-5 border-t border-border bg-card pt-5">
                   <CategoryForm
                     category={category}
                     mode="edit"

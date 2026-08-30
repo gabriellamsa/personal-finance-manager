@@ -11,7 +11,7 @@ export default function DashboardLoading() {
         {Array.from({ length: 3 }).map((_, index) => (
           <div
             key={index}
-            className="h-44 animate-pulse rounded-[28px] border border-border bg-white/70"
+            className="h-44 animate-pulse rounded-xl border border-border bg-card-strong"
           />
         ))}
       </div>

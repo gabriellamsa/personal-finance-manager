@@ -76,7 +76,6 @@ export function SignInForm({ feedback, redirectTo }: SignInFormProps) {
 
       startTransition(() => {
         router.replace(destination);
-        router.refresh();
       });
     } catch (error) {
       setFormError(
@@ -86,7 +85,7 @@ export function SignInForm({ feedback, redirectTo }: SignInFormProps) {
   }
 
   return (
-    <Card className="w-full max-w-md">
+    <Card className="w-full max-w-md border-0 bg-transparent p-0">
       <CardHeader>
         <CardTitle>Welcome back</CardTitle>
         <CardDescription>
@@ -94,7 +93,12 @@ export function SignInForm({ feedback, redirectTo }: SignInFormProps) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form className="space-y-5" onSubmit={form.handleSubmit(handleSubmit)} noValidate>
+        <form
+          className="space-y-5"
+          method="post"
+          onSubmit={form.handleSubmit(handleSubmit)}
+          noValidate
+        >
           {feedback ? (
             <FormMessage tone={feedback.tone}>
               <p className="font-semibold">{feedback.title}</p>
@@ -151,7 +155,7 @@ export function SignInForm({ feedback, redirectTo }: SignInFormProps) {
           <p className="text-sm text-foreground/62">
             New here?{" "}
             <Link
-              className="font-semibold text-accent"
+              className="font-semibold text-foreground underline decoration-accent decoration-2 underline-offset-4"
               href={buildAuthRouteHref(AUTH_ROUTES.signUp, redirectTo)}
             >
               Create an account

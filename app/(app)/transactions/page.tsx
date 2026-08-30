@@ -79,10 +79,10 @@ export default async function TransactionsPage({
   return (
     <div className="space-y-8">
       <div className="space-y-2">
-        <p className="text-sm font-medium uppercase tracking-[0.2em] text-foreground/45">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-foreground/50">
           Transactions
         </p>
-        <h1 className="text-4xl font-semibold tracking-tight text-foreground">
+        <h1 className="max-w-3xl text-4xl font-semibold tracking-[-0.04em] text-foreground sm:text-5xl">
           Track, filter, and maintain your financial history.
         </h1>
         <p className="max-w-2xl text-base text-foreground/66">
@@ -95,7 +95,7 @@ export default async function TransactionsPage({
         <Card className="bg-card-strong">
           <CardHeader>
             <CardDescription>Filtered balance</CardDescription>
-            <CardTitle className="text-3xl">
+            <CardTitle className="font-mono text-3xl tabular-nums">
               {formatCurrency(transactionsResult.summary.balanceInCents, user.currencyCode)}
             </CardTitle>
           </CardHeader>
@@ -103,7 +103,7 @@ export default async function TransactionsPage({
         <Card className="bg-card-strong">
           <CardHeader>
             <CardDescription>Income</CardDescription>
-            <CardTitle className="text-3xl text-accent">
+            <CardTitle className="font-mono text-3xl tabular-nums text-foreground">
               {formatCurrency(
                 transactionsResult.summary.totalIncomeInCents,
                 user.currencyCode,
@@ -114,7 +114,7 @@ export default async function TransactionsPage({
         <Card className="bg-card-strong">
           <CardHeader>
             <CardDescription>Expenses</CardDescription>
-            <CardTitle className="text-3xl text-danger">
+            <CardTitle className="font-mono text-3xl tabular-nums text-danger">
               {formatCurrency(
                 transactionsResult.summary.totalExpensesInCents,
                 user.currencyCode,
@@ -125,7 +125,7 @@ export default async function TransactionsPage({
         <Card className="bg-card-strong">
           <CardHeader>
             <CardDescription>Results</CardDescription>
-            <CardTitle className="text-3xl">
+            <CardTitle className="font-mono text-3xl tabular-nums">
               {transactionsResult.summary.transactionCount}
             </CardTitle>
           </CardHeader>
@@ -214,7 +214,7 @@ export default async function TransactionsPage({
           >
             <Button variant="secondary">Previous</Button>
           </Link>
-          <span className="text-sm font-medium text-foreground/72">
+          <span className="font-mono text-sm font-medium tabular-nums text-foreground/72">
             Page {transactionsResult.page} of {transactionsResult.pageCount}
           </span>
           <Link
