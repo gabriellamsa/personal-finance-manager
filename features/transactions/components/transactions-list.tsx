@@ -60,13 +60,13 @@ export function TransactionsList({
   }
 
   return (
-    <div className="space-y-4">
+    <Card className="bg-card-strong">
+      <CardContent className="divide-y divide-border">
       {transactions.map((transaction) => {
         const isEditing = editingTransactionId === transaction.id;
 
         return (
-          <Card key={transaction.id} className="bg-card-strong">
-            <CardContent className="space-y-5">
+          <div key={transaction.id} className="space-y-5 py-5 first:pt-0 last:pb-0">
               <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                 <div className="space-y-3">
                   <div className="flex flex-wrap items-center gap-2">
@@ -98,8 +98,8 @@ export function TransactionsList({
                   <p
                     className={
                       transaction.type === "INCOME"
-                        ? "text-xl font-semibold text-accent"
-                        : "text-xl font-semibold text-danger"
+                        ? "font-mono text-xl font-semibold tabular-nums text-foreground"
+                        : "font-mono text-xl font-semibold tabular-nums text-danger"
                     }
                   >
                     {transaction.type === "INCOME" ? "+" : "-"}
@@ -123,7 +123,7 @@ export function TransactionsList({
               </div>
 
               {isEditing ? (
-                <div className="rounded-[24px] border border-border bg-white/70 p-5">
+                <div className="border-t border-border bg-card pt-5">
                   <TransactionForm
                     categories={categories}
                     mode="edit"
@@ -133,10 +133,10 @@ export function TransactionsList({
                   />
                 </div>
               ) : null}
-            </CardContent>
-          </Card>
+          </div>
         );
       })}
-    </div>
+      </CardContent>
+    </Card>
   );
 }

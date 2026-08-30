@@ -12,14 +12,14 @@ export function Logo({ className }: LogoProps) {
       href="/"
       className={cn("inline-flex items-center gap-3 text-foreground", className)}
     >
-      <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-[#14213d] text-sm font-bold text-white shadow-[0_10px_24px_rgba(20,33,61,0.25)]">
+      <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-foreground text-xs font-bold tracking-tight text-accent">
         PF
       </span>
       <span className="flex flex-col leading-none">
-        <span className="text-sm font-semibold uppercase tracking-[0.2em] text-foreground/45">
+        <span className="text-[11px] font-medium uppercase tracking-[0.18em] text-foreground/45">
           Finance
         </span>
-        <span className="text-base font-semibold">Personal Finance</span>
+        <span className="mt-1 text-sm font-semibold tracking-[-0.01em]">Personal Finance</span>
       </span>
     </Link>
   );

@@ -28,10 +28,10 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-8">
       <div className="flex flex-col gap-2">
-        <p className="text-sm font-medium uppercase tracking-[0.2em] text-foreground/45">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-foreground/50">
           Dashboard
         </p>
-        <h1 className="text-4xl font-semibold tracking-tight text-foreground">
+        <h1 className="max-w-3xl text-4xl font-semibold tracking-[-0.04em] text-foreground sm:text-5xl">
           Welcome back, {user.name.split(" ")[0]}.
         </h1>
         <p className="max-w-2xl text-base text-foreground/66">
@@ -68,7 +68,7 @@ export default async function DashboardPage() {
         <Card className="bg-card-strong">
           <CardHeader>
             <CardDescription>Total balance</CardDescription>
-            <CardTitle className="text-3xl">
+            <CardTitle className="font-mono text-3xl tabular-nums">
               {formatCurrency(summary.balanceInCents, user.currencyCode)}
             </CardTitle>
           </CardHeader>
@@ -79,7 +79,7 @@ export default async function DashboardPage() {
         <Card className="bg-card-strong">
           <CardHeader>
             <CardDescription>Income</CardDescription>
-            <CardTitle className="text-3xl text-accent">
+            <CardTitle className="font-mono text-3xl tabular-nums text-foreground">
               {formatCurrency(summary.totalIncomeInCents, user.currencyCode)}
             </CardTitle>
           </CardHeader>
@@ -90,7 +90,7 @@ export default async function DashboardPage() {
         <Card className="bg-card-strong">
           <CardHeader>
             <CardDescription>Expenses</CardDescription>
-            <CardTitle className="text-3xl text-danger">
+            <CardTitle className="font-mono text-3xl tabular-nums text-danger">
               {formatCurrency(summary.totalExpensesInCents, user.currencyCode)}
             </CardTitle>
           </CardHeader>
@@ -100,18 +100,18 @@ export default async function DashboardPage() {
         </Card>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
         <Card className="min-h-[280px] bg-card-strong">
           <CardHeader>
             <CardDescription>Recent transactions</CardDescription>
             <CardTitle>Latest financial activity</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="divide-y divide-border">
             {summary.recentTransactions.length ? (
               summary.recentTransactions.map((transaction) => (
                 <div
                   key={transaction.id}
-                  className="flex flex-col gap-3 rounded-[22px] border border-border bg-white/75 px-4 py-4 lg:flex-row lg:items-center lg:justify-between"
+                  className="flex flex-col gap-3 py-4 first:pt-0 last:pb-0 lg:flex-row lg:items-center lg:justify-between"
                 >
                   <div className="space-y-2">
                     <div className="flex flex-wrap items-center gap-2">
@@ -136,8 +136,8 @@ export default async function DashboardPage() {
                   <p
                     className={
                       transaction.type === "INCOME"
-                        ? "text-lg font-semibold text-accent"
-                        : "text-lg font-semibold text-danger"
+                        ? "font-mono text-lg font-semibold tabular-nums text-foreground"
+                        : "font-mono text-lg font-semibold tabular-nums text-danger"
                     }
                   >
                     {transaction.type === "INCOME" ? "+" : "-"}

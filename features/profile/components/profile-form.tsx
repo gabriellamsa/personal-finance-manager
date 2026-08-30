@@ -135,7 +135,7 @@ export function ProfileForm({
   }
 
   return (
-    <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
+    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_300px] lg:items-start">
       <form
         className="grid gap-4 md:grid-cols-2"
         method="post"
@@ -239,6 +239,7 @@ export function ProfileForm({
 
         <div className="md:col-span-2">
           <Button
+            className="w-full sm:w-auto"
             type="submit"
             disabled={form.formState.isSubmitting}
             aria-busy={form.formState.isSubmitting}
@@ -248,7 +249,7 @@ export function ProfileForm({
         </div>
       </form>
 
-      <div className="space-y-4 rounded-[24px] border border-border bg-white/72 p-5">
+      <aside className="space-y-5 border-t border-border pt-5 lg:sticky lg:top-6 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-6">
         <div className="space-y-2">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-foreground/45">
             Preview
@@ -262,11 +263,11 @@ export function ProfileForm({
           </p>
         </div>
 
-        <div className="space-y-3 rounded-[20px] border border-border bg-card px-4 py-4">
-          <div>
+        <div className="divide-y divide-border border-y border-border">
+          <div className="py-4">
             <p className="text-sm font-medium text-foreground/62">Sample amount</p>
             {hasValidCurrencyPreview ? (
-              <p className="text-xl font-semibold text-foreground">
+              <p className="font-mono text-xl font-semibold tabular-nums text-foreground">
                 {formatCurrency(123456, selectedCurrencyCode)}
               </p>
             ) : (
@@ -275,12 +276,12 @@ export function ProfileForm({
               </p>
             )}
           </div>
-          <div>
+          <div className="py-4">
             <p className="text-sm font-medium text-foreground/62">
               Current profile time
             </p>
             {hasValidTimeZonePreview ? (
-              <p className="text-base font-semibold text-foreground">
+              <p className="font-mono text-sm font-medium tabular-nums text-foreground">
                 {formatDateTime(previewTimestamp, selectedTimeZone)}
               </p>
             ) : (
@@ -289,17 +290,17 @@ export function ProfileForm({
               </p>
             )}
           </div>
-          <div>
+          <div className="py-4">
             <p className="text-sm font-medium text-foreground/62">Selected zone</p>
-            <p className="text-sm text-foreground">{selectedTimeZone}</p>
+            <p className="font-mono text-sm text-foreground">{selectedTimeZone}</p>
           </div>
         </div>
 
-        <div className="rounded-[20px] border border-border bg-card px-4 py-4 text-sm text-foreground/64">
+        <div className="border-l-2 border-accent bg-accent/10 px-4 py-3 text-sm text-foreground/64">
           Transaction dates remain tied to the calendar day you selected, so
           changing the time zone will not shift existing entries to a different day.
         </div>
-      </div>
+      </aside>
     </div>
   );
 }

@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { startTransition, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,7 @@ import { FormMessage } from "@/components/ui/form-message";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
+import { CategoryColorPicker } from "@/features/categories/components/category-color-picker";
 import {
   createCategorySchema,
   type CreateCategoryFormInput,
@@ -44,7 +45,7 @@ function getInitialValues(category?: CategoryListItem): CreateCategoryFormInput 
   }
 
   return {
-    color: "#0F766E",
+    color: "#FFD369",
     name: "",
     type: "EXPENSE",
   };
@@ -64,6 +65,15 @@ export function CategoryForm({
     defaultValues: getInitialValues(category),
     resolver: zodResolver(createCategorySchema),
   });
+  const selectedColor =
+    useWatch({ control: form.control, name: "color" }) ?? "#FFD369";
+
+  function handleColorChange(color: string) {
+    form.setValue("color", color, {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
+  }
 
   async function handleSubmit(values: CreateCategoryInput) {
     setFormError(null);
@@ -95,7 +105,7 @@ export function CategoryForm({
 
       if (mode === "create") {
         form.reset({
-          color: "#0F766E",
+          color: "#FFD369",
           name: "",
           type: values.type,
         });
@@ -120,7 +130,7 @@ export function CategoryForm({
 
   return (
     <form
-      className="grid gap-4 md:grid-cols-[1.3fr_0.8fr_0.6fr_auto]"
+      className="grid gap-5 md:grid-cols-2 lg:grid-cols-[minmax(0,1.2fr)_minmax(180px,0.6fr)_auto]"
       method="post"
       onSubmit={form.handleSubmit(handleSubmit)}
       noValidate
@@ -145,17 +155,7 @@ export function CategoryForm({
         </Select>
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor={`category-color-${category?.id ?? "new"}`}>Color</Label>
-        <Input
-          id={`category-color-${category?.id ?? "new"}`}
-          type="color"
-          className="px-2"
-          {...form.register("color")}
-        />
-      </div>
-
-      <div className="flex items-end gap-3">
+      <div className="flex items-end gap-3 md:col-span-2 lg:col-span-1">
         <Button
           type="submit"
           className="w-full"
@@ -183,13 +183,27 @@ export function CategoryForm({
         ) : null}
       </div>
 
+      <fieldset className="space-y-2 md:col-span-2 lg:col-span-3">
+        <legend className="text-sm font-medium text-foreground/78">Color</legend>
+        <CategoryColorPicker
+          id={`category-color-${category?.id ?? "new"}`}
+          value={selectedColor}
+          onChange={handleColorChange}
+        />
+        {form.formState.errors.color ? (
+          <p className="text-sm text-danger">
+            {form.formState.errors.color.message}
+          </p>
+        ) : null}
+      </fieldset>
+
       {formError ? (
-        <FormMessage className="md:col-span-4" tone="error">
+        <FormMessage className="md:col-span-2 lg:col-span-3" tone="error">
           {formError}
         </FormMessage>
       ) : null}
       {successMessage ? (
-        <FormMessage className="md:col-span-4" tone="success">
+        <FormMessage className="md:col-span-2 lg:col-span-3" tone="success">
           {successMessage}
         </FormMessage>
       ) : null}

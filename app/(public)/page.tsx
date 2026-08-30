@@ -22,9 +22,9 @@ export default async function MarketingPage() {
   await redirectIfAuthenticated();
 
   return (
-    <main className="app-shell-grid min-h-screen px-6 py-8 sm:px-8 lg:px-10">
-      <div className="mx-auto flex max-w-6xl flex-col gap-16">
-        <header className="flex flex-col gap-6 rounded-[32px] border border-border bg-card px-6 py-6 shadow-[0_24px_60px_rgba(20,33,61,0.08)] backdrop-blur lg:flex-row lg:items-center lg:justify-between">
+    <main className="app-shell-grid min-h-screen">
+      <div className="mx-auto flex max-w-7xl flex-col px-6 sm:px-8 lg:px-10">
+        <header className="flex flex-col gap-5 border-b border-border py-6 sm:flex-row sm:items-center sm:justify-between">
           <Logo />
           <div className="flex items-center gap-3">
             <Link href={AUTH_ROUTES.signIn}>
@@ -36,13 +36,13 @@ export default async function MarketingPage() {
           </div>
         </header>
 
-        <section className="grid gap-8 lg:grid-cols-[1.3fr_0.7fr] lg:items-end">
-          <div className="space-y-7">
-            <div className="inline-flex rounded-full border border-border bg-white/70 px-4 py-2 text-sm font-medium text-foreground/70">
+        <section className="grid gap-12 py-16 lg:grid-cols-[1.25fr_0.75fr] lg:items-end lg:py-24">
+          <div className="space-y-8">
+            <div className="inline-flex border-l-2 border-accent pl-3 text-xs font-semibold uppercase tracking-[0.16em] text-foreground/65">
               Production-minded portfolio project
             </div>
             <div className="space-y-4">
-              <h1 className="max-w-4xl text-5xl font-semibold leading-[1.02] tracking-tight text-foreground sm:text-6xl">
+              <h1 className="max-w-4xl text-5xl font-semibold leading-[0.98] tracking-[-0.055em] text-foreground sm:text-7xl">
                 Build clarity around your money, one reliable system at a time.
               </h1>
               <p className="max-w-2xl text-lg text-foreground/68">
@@ -64,7 +64,7 @@ export default async function MarketingPage() {
             </div>
           </div>
 
-          <Card className="bg-[#14213d] text-white">
+          <Card className="border-0 bg-foreground text-white">
             <CardHeader>
               <CardDescription className="text-white/68">
                 Current foundation
@@ -73,11 +73,11 @@ export default async function MarketingPage() {
                 Core finance flows are live and ready for continued refinement.
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4 text-sm text-white/78">
+            <CardContent className="divide-y divide-white/15 text-sm text-white/75">
               {featureHighlights.map((item) => (
                 <div
                   key={item}
-                  className="rounded-2xl border border-white/12 bg-white/6 px-4 py-3"
+                  className="py-4 first:pt-0 last:pb-0"
                 >
                   {item}
                 </div>
@@ -86,8 +86,8 @@ export default async function MarketingPage() {
           </Card>
         </section>
 
-        <section className="grid gap-5 md:grid-cols-3">
-          <Card>
+        <section className="grid border-y border-border md:grid-cols-3">
+          <Card className="rounded-none border-0 border-b border-border bg-transparent px-0 py-8 md:border-r md:border-b-0 md:px-6 md:first:pl-0">
             <CardHeader>
               <CardDescription>Security</CardDescription>
               <CardTitle>Credential flow designed for real users</CardTitle>
@@ -98,7 +98,7 @@ export default async function MarketingPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="rounded-none border-0 border-b border-border bg-transparent px-0 py-8 md:border-r md:border-b-0 md:px-6">
             <CardHeader>
               <CardDescription>Domain</CardDescription>
               <CardTitle>Finance-first schema</CardTitle>
@@ -109,7 +109,7 @@ export default async function MarketingPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="rounded-none border-0 bg-transparent px-0 py-8 md:px-6 md:last:pr-0">
             <CardHeader>
               <CardDescription>Scalability</CardDescription>
               <CardTitle>Feature-based boundaries</CardTitle>

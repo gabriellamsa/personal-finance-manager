@@ -3,12 +3,12 @@ function LoadingCardLine({
 }: {
   className?: string;
 }) {
-  return <div className={`animate-pulse rounded-2xl bg-white/70 ${className ?? ""}`} />;
+  return <div className={`animate-pulse rounded-lg bg-foreground/8 ${className ?? ""}`} />;
 }
 
 export default function AuthLoading() {
   return (
-    <div className="w-full max-w-md rounded-[28px] border border-border bg-card p-6 shadow-[0_20px_60px_rgba(20,33,61,0.08)]">
+    <div className="w-full max-w-md">
       <div className="space-y-5">
         <div className="space-y-2">
           <LoadingCardLine className="h-7 w-40" />
@@ -20,7 +20,7 @@ export default function AuthLoading() {
           <LoadingCardLine className="h-12 w-full" />
           <LoadingCardLine className="h-4 w-24" />
           <LoadingCardLine className="h-12 w-full" />
-          <LoadingCardLine className="h-12 w-full rounded-full" />
+          <LoadingCardLine className="h-12 w-full" />
         </div>
       </div>
     </div>

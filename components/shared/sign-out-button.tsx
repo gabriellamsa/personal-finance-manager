@@ -28,7 +28,6 @@ export function SignOutButton() {
 
       startTransition(() => {
         router.replace(`${AUTH_ROUTES.signIn}?message=signed-out`);
-        router.refresh();
       });
     } catch (error) {
       setErrorMessage(

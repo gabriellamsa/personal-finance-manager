@@ -3,7 +3,7 @@ function LoadingBlock({
 }: {
   className?: string;
 }) {
-  return <div className={`animate-pulse rounded-[24px] bg-white/70 ${className ?? ""}`} />;
+  return <div className={`animate-pulse rounded-lg bg-foreground/8 ${className ?? ""}`} />;
 }
 
 export default function AppLoading() {
@@ -21,7 +21,7 @@ export default function AppLoading() {
         <LoadingBlock className="h-36" />
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
         <LoadingBlock className="h-[320px]" />
         <LoadingBlock className="h-[320px]" />
       </div>

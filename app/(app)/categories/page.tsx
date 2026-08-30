@@ -23,10 +23,10 @@ export default async function CategoriesPage() {
   return (
     <div className="space-y-8">
       <div className="space-y-2">
-        <p className="text-sm font-medium uppercase tracking-[0.2em] text-foreground/45">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-foreground/50">
           Categories
         </p>
-        <h1 className="text-4xl font-semibold tracking-tight text-foreground">
+        <h1 className="max-w-3xl text-4xl font-semibold tracking-[-0.04em] text-foreground sm:text-5xl">
           Organize reporting with system and custom categories.
         </h1>
         <p className="max-w-2xl text-base text-foreground/66">
@@ -44,7 +44,7 @@ export default async function CategoriesPage() {
           <CategoryForm />
 
           {!categories.some((category) => category.scope === "CUSTOM") ? (
-            <div className="rounded-[24px] border border-dashed border-border bg-white/72 p-4 text-sm text-foreground/64">
+            <div className="border-l-2 border-accent bg-accent/10 px-4 py-3 text-sm text-foreground/64">
               You are currently using only system categories. Add custom ones when
               your financial workflow needs more granular reporting.
             </div>

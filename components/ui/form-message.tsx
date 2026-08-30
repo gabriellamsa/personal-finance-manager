@@ -18,10 +18,10 @@ export function FormMessage({
       role={tone === "error" ? "alert" : "status"}
       aria-live="polite"
       className={cn(
-        "rounded-2xl border px-4 py-3 text-sm",
+        "rounded-lg border px-4 py-3 text-sm",
         tone === "error" && "border-danger/20 bg-danger/8 text-danger",
-        tone === "info" && "border-border bg-white/80 text-foreground/72",
-        tone === "success" && "border-accent/18 bg-accent/8 text-accent",
+        tone === "info" && "border-border bg-foreground/3 text-foreground/72",
+        tone === "success" && "border-accent bg-accent/20 text-foreground",
         className,
       )}
     >
