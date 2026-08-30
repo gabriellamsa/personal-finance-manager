@@ -21,11 +21,11 @@
 
 ## Overview
 
-Personal Finance Manager is a portfolio project focused on application development, authenticated user flows, relational data modeling, API design, automated testing, and continuous integration.
+Personal Finance Manager is a portfolio project focused on application development, authenticated user flows, relational data modeling, API design, automated testing, continuous integration, and operational readiness.
 
 The application allows users to manage income and expenses, organize transactions by category, and review financial data through a dashboard.
 
-The core finance flow is implemented. Deployment hardening, observability, broader test coverage, and production operational documentation are still in progress.
+The core finance flow and a vendor-neutral observability foundation are implemented. Deployment hardening, external telemetry, alerting, and broader test coverage are still in progress.
 
 ---
 
@@ -68,6 +68,17 @@ The core finance flow is implemented. Deployment hardening, observability, broad
 - Recent transactions
 - Category reporting chart
 - Monthly summary chart
+
+### Operational Readiness & Application Support
+
+The [Application Support & Reliability Case Study](docs/application-support-case-study.md) documents how the existing finance application evolved from a functional product into a system with explicit operational health, request correlation, failure visibility, automated validation, and support procedures.
+
+- Separate liveness and readiness health checks
+- Real read-only PostgreSQL readiness verification with a bounded timeout
+- Structured JSON server logs with defensive redaction
+- Validated request IDs and response correlation headers across API routes
+- Request duration through logs and `Server-Timing`
+- Operational [observability guide](docs/observability.md) and [readiness failure runbook](docs/runbooks/readiness-check-failure.md)
 
 ---
 
@@ -159,10 +170,13 @@ lib/
 ├── env/
 ├── formatters/
 ├── http/
+├── health/
+├── observability/
 └── utils/
 
 prisma/
 e2e/
+docs/
 tests/mocks/
 .github/workflows/
 ```
@@ -208,7 +222,12 @@ GET    /api/transactions
 POST   /api/transactions
 PATCH  /api/transactions/[transactionId]
 DELETE /api/transactions/[transactionId]
+
+GET    /api/health/live
+GET    /api/health/ready
 ```
+
+Health endpoints are public, uncached, and intentionally expose only safe operational metadata. `/api/health/live` confirms the current process can respond without accessing PostgreSQL. `/api/health/ready` validates required configuration and performs a read-only PostgreSQL connectivity check. See the [observability guide](docs/observability.md) for contracts, correlation behavior, log fields, and local verification.
 
 ---
 
@@ -302,6 +321,7 @@ Vitest covers critical service and route-handler behaviour for:
 - Profile updates
 - Category management
 - Transaction management
+- Health checks, readiness timeout, request correlation, and log redaction
 
 ### End-to-end tests
 
@@ -313,6 +333,7 @@ Playwright covers critical browser flows including:
 - Password changes
 - Category management
 - Transaction CRUD operations
+- Liveness and readiness endpoint contracts
 
 ### Continuous integration
 
@@ -349,10 +370,11 @@ Current limitations include:
 
 - No hosting provider integration is hardcoded.
 - Deployment hardening is not complete.
-- Observability and operational monitoring are not implemented.
+- Observability currently uses process stdout/stderr and health endpoints; no external telemetry backend is configured.
+- Alerting, historical metrics, service-level objectives, and distributed tracing are not implemented.
 - Broader test coverage is still being expanded.
 - Accessibility and UX refinement remain ongoing.
-- A production runbook has not yet been completed.
+- The current runbook covers readiness failure only; broader production incident procedures remain incomplete.
 
 ---
 
@@ -364,8 +386,8 @@ Current limitations include:
 - Complete custom category management
 - Perform a deeper accessibility review
 - Add deployment hardening
-- Document a production runbook
-- Add observability and operational readiness checks
+- Expand operational runbooks beyond readiness failures
+- Evaluate external telemetry, retention, alerting, and distributed tracing
 
 ---
 

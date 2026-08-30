@@ -46,7 +46,7 @@ export default async function MarketingPage() {
                 Build clarity around your money, one reliable system at a time.
               </h1>
               <p className="max-w-2xl text-lg text-foreground/68">
-                Personal Finance Management System is a full-stack application for
+                Personal Finance Manager is a full-stack application for
                 registering transactions, organizing categories, and monitoring
                 balance performance with a production-minded architecture and
                 portfolio-grade UX.

@@ -8,7 +8,8 @@ import {
   requireApiUser,
   setSessionCookie,
 } from "@/lib/auth/session";
-import { handleRouteError, jsonSuccess } from "@/lib/http/response";
+import { jsonSuccess } from "@/lib/http/response";
+import { withRouteObservability } from "@/lib/observability/route-observability";
 import {
   consumeAuthRateLimit,
   resetAuthRateLimit,
@@ -17,24 +18,25 @@ import { getClientIp } from "@/lib/security/request";
 
 export const runtime = "nodejs";
 
-export async function POST(request: Request) {
-  try {
-    const user = await requireApiUser();
-    const payload = changePasswordSchema.parse(await request.json());
-    const rateLimitKey = `${getClientIp(request)}:${user.id}`;
+async function POSTHandler(request: Request) {
+  const user = await requireApiUser();
+  const payload = changePasswordSchema.parse(await request.json());
+  const rateLimitKey = `${getClientIp(request)}:${user.id}`;
 
-    consumeAuthRateLimit("change-password", rateLimitKey);
+  consumeAuthRateLimit("change-password", rateLimitKey);
 
-    const updatedUser = await changePassword(user.id, payload);
-    const token = await createSessionToken(updatedUser);
+  const updatedUser = await changePassword(user.id, payload);
+  const token = await createSessionToken(updatedUser);
 
-    await setSessionCookie(token);
-    resetAuthRateLimit("change-password", rateLimitKey);
+  await setSessionCookie(token);
+  resetAuthRateLimit("change-password", rateLimitKey);
 
-    return jsonSuccess({
-      user: toAuthenticatedUser(updatedUser),
-    });
-  } catch (error) {
-    return handleRouteError(error);
-  }
+  return jsonSuccess({
+    user: toAuthenticatedUser(updatedUser),
+  });
 }
+
+export const POST = withRouteObservability(
+  "/api/auth/change-password",
+  POSTHandler,
+);

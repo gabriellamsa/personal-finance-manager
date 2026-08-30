@@ -26,7 +26,7 @@ These rules are mandatory:
 
 Build a professional Full Stack application called:
 
-Personal Finance Management System
+Personal Finance Manager
 
 ## Product Goal
 
