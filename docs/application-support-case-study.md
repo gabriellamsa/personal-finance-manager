@@ -85,20 +85,19 @@ Next.js `instrumentation.ts` captures uncaught server errors outside the wrapped
 
 ## Incident demonstration
 
-The portfolio demonstration follows a controlled local failure scenario:
+The portfolio demonstration is automated by `npm run ops:drill`. It runs isolated local application processes and verifies the following sequence without stopping or modifying the configured PostgreSQL database:
 
-1. Call `/api/health/live` and confirm HTTP `200`.
-2. Call `/api/health/ready` and confirm HTTP `200` with PostgreSQL `pass`.
-3. Send a known `X-Request-Id` and locate the matching completion log.
-4. Point a local application instance at an unavailable disposable PostgreSQL port.
-5. Confirm liveness remains HTTP `200`.
-6. Confirm readiness returns HTTP `503` with `DATABASE_UNAVAILABLE`.
-7. Use the request ID to locate `health.check.failed` and `http.request.completed` events.
-8. Confirm logs do not expose hostname, credentials, connection strings, user data, or financial values.
-9. Restore the valid local database configuration.
-10. Confirm readiness and a representative finance workflow recover.
+1. baseline liveness and readiness return HTTP `200`;
+2. an isolated application process receives an intentionally unavailable local PostgreSQL endpoint;
+3. liveness remains HTTP `200` because the HTTP process is alive;
+4. readiness returns HTTP `503` with `DATABASE_UNAVAILABLE`;
+5. the known request ID identifies both `health.check.failed` and `http.request.completed`;
+6. captured output contains neither the connection string nor the database password;
+7. a recovered process using valid configuration returns readiness HTTP `200`.
 
-This procedure must not be run against a shared, staging, or production database without explicit authorization.
+The command fails if any assertion is not satisfied and is executed by CI after the production build. Raw logs remain in memory and are not committed. The sanitized [PostgreSQL Readiness Drill Report](./incident-reports/postgresql-readiness-drill.md) records the verified result.
+
+The manual failure procedure must not be run against a shared, staging, or production database without explicit authorization.
 
 ## Validation evidence
 
@@ -108,6 +107,7 @@ The implementation is validated through the existing project pipeline:
 - Vitest for health behavior, timeout, request IDs, logging, redaction, route wrapping, and regression coverage;
 - Playwright for live HTTP contracts and the existing finance flows;
 - Next.js production build and TypeScript validation;
+- an isolated PostgreSQL failure-and-recovery drill after the production build;
 - `git diff --check` for patch integrity.
 
 No second CI workflow, external monitoring provider, schema migration, or fake dependency check is introduced.

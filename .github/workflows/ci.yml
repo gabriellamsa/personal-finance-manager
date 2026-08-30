@@ -57,3 +57,6 @@ jobs:
 
       - name: Run production build
         run: npm run build
+
+      - name: Run operational readiness drill
+        run: npm run ops:drill

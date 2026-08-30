@@ -29,6 +29,26 @@ curl -i \
   http://localhost:3000/api/health/ready
 ```
 
+## Safe local rehearsal
+
+Use the automated drill to rehearse this runbook without stopping or changing the configured local database:
+
+```bash
+npm run build
+npm run ops:drill
+```
+
+The drill creates isolated application processes and sends one of them to an unused local PostgreSQL port. It must prove:
+
+- baseline liveness and readiness return HTTP `200`;
+- liveness remains HTTP `200` during the simulated dependency outage;
+- readiness returns HTTP `503` with `DATABASE_UNAVAILABLE`;
+- `health.check.failed` and `http.request.completed` share the incident request ID;
+- captured process output does not contain the database URL or password;
+- readiness returns HTTP `200` after valid configuration is restored.
+
+This automation is a rehearsal aid, not a replacement for environment-specific provider, network, capacity, and escalation procedures.
+
 ## Evidence to collect
 
 - UTC start and end time of the observed failure
@@ -106,3 +126,5 @@ Escalate to the application owner when required configuration is unclear or appl
 ## Post-incident follow-up
 
 Document the timeline, impact, root cause, recovery action, and request IDs. Identify whether a deployment guard, configuration validation, capacity change, external alert, or runbook improvement would have reduced detection or recovery time. Track that work separately from the incident response.
+
+The repository includes a sanitized [local drill report](../incident-reports/postgresql-readiness-drill.md) as an example of the expected evidence format.

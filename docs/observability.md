@@ -174,7 +174,39 @@ Do not capture application logs in a repository file or commit them.
 
 ## Safely simulating database unavailability
 
-Use only a disposable local development database. Stop the local PostgreSQL service through the same service manager used to start it, then call `/api/health/live` and `/api/health/ready` again. Liveness should remain `200`; readiness should return `503`. Locate the `health.check.failed` event by request ID, restore PostgreSQL, and confirm readiness returns `200`.
+The preferred verification is the automated local drill:
+
+```bash
+npm run build
+npm run ops:drill
+```
+
+The drill does not stop or modify the configured PostgreSQL database. It starts isolated production application processes, verifies the healthy baseline, points one isolated process at an intentionally unavailable local port, checks the incident contract and correlated events, and then starts a recovered process with the valid configuration.
+
+Expected safe summary:
+
+```json
+{
+  "baseline": {
+    "livenessStatus": 200,
+    "readinessStatus": 200
+  },
+  "incident": {
+    "livenessStatus": 200,
+    "readinessStatus": 503,
+    "databaseCode": "DATABASE_UNAVAILABLE",
+    "sensitiveDataExposed": false
+  },
+  "recovery": {
+    "readinessStatus": 200
+  },
+  "status": "passed"
+}
+```
+
+The script also requires the incident request ID to appear in both `health.check.failed` and `http.request.completed`. It fails if captured output contains the database connection string or password. Raw logs are kept in memory only and are not written to the repository.
+
+For a manual exercise, use only a disposable local development environment. Stop the local PostgreSQL service through the same service manager used to start it, call `/api/health/live` and `/api/health/ready`, restore PostgreSQL, and validate recovery.
 
 Do not test this procedure against shared, staging, or production databases. Do not print environment-variable values while troubleshooting. See [Readiness Check Failure](./runbooks/readiness-check-failure.md) for the complete procedure.
 

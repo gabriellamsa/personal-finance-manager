@@ -78,6 +78,7 @@ The [Application Support & Reliability Case Study](docs/application-support-case
 - Structured JSON server logs with defensive redaction
 - Validated request IDs and response correlation headers across API routes
 - Request duration through logs and `Server-Timing`
+- Reproducible PostgreSQL failure-and-recovery drill
 - Operational [observability guide](docs/observability.md) and [readiness failure runbook](docs/runbooks/readiness-check-failure.md)
 
 ---
@@ -301,6 +302,7 @@ npm run lint
 npm run test
 npm run test:watch
 npm run test:e2e
+npm run ops:drill
 npm run db:generate
 npm run db:migrate
 npm run db:deploy
@@ -334,6 +336,7 @@ Playwright covers critical browser flows including:
 - Category management
 - Transaction CRUD operations
 - Liveness and readiness endpoint contracts
+- Automated PostgreSQL failure and recovery drill
 
 ### Continuous integration
 
@@ -344,8 +347,11 @@ GitHub Actions runs:
 - Unit tests
 - End-to-end tests
 - Production build validation
+- Operational readiness drill against an intentionally unavailable local PostgreSQL port
 
 The workflow runs on pushes to `main` and on pull requests.
+
+Run `npm run build && npm run ops:drill` locally to reproduce the incident and recovery evidence without stopping or modifying the configured database. See the [verified drill report](docs/incident-reports/postgresql-readiness-drill.md).
 
 ---
 
