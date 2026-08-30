@@ -46,8 +46,14 @@ jobs:
       - name: Run lint
         run: npm run lint
 
+      - name: Run type checks
+        run: npm run typecheck
+
       - name: Run tests
         run: npm run test
+
+      - name: Block critical dependency vulnerabilities
+        run: npm run audit:critical
 
       - name: Install Playwright browser
         run: npx playwright install --with-deps chromium

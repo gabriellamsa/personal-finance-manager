@@ -3,6 +3,8 @@ import { once } from "node:events";
 import { createServer } from "node:net";
 import path from "node:path";
 
+import "dotenv/config";
+
 const HOST = "127.0.0.1";
 const STARTUP_TIMEOUT_MS = 30_000;
 const EVENT_TIMEOUT_MS = 3_000;
@@ -383,9 +385,28 @@ async function main() {
   );
 }
 
+function getSafeFailureMessage(error: unknown) {
+  const rawMessage = error instanceof Error ? error.message : "Unknown failure.";
+  const sensitiveValues = [process.env.DATABASE_URL, process.env.JWT_SECRET].filter(
+    (value): value is string => Boolean(value),
+  );
+  let safeMessage = rawMessage.replace(
+    /postgres(?:ql)?:\/\/[^\s]+/gi,
+    "[REDACTED_DATABASE_URL]",
+  );
+
+  for (const sensitiveValue of sensitiveValues) {
+    safeMessage = safeMessage.replaceAll(sensitiveValue, "[REDACTED]");
+  }
+
+  return safeMessage.slice(0, 300);
+}
+
 main().catch((error: unknown) => {
   const errorName = error instanceof Error ? error.name : "UnknownError";
 
-  console.error(`Operational readiness drill failed (${errorName}).`);
+  console.error(
+    `Operational readiness drill failed (${errorName}): ${getSafeFailureMessage(error)}`,
+  );
   process.exitCode = 1;
 });
