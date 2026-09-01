@@ -27,6 +27,7 @@ model User {
   timezone     String        @default("UTC") @db.VarChar(100)
   categories   Category[]
   transactions Transaction[]
+  transactionImports TransactionImport[]
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 
@@ -65,6 +66,7 @@ model Transaction {
   occurredOn    DateTime        @db.Date
   user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   category      Category        @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  importMetadata TransactionImport?
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
 
@@ -72,4 +74,20 @@ model Transaction {
   @@index([userId, type, occurredOn(sort: Desc)])
   @@index([categoryId, occurredOn(sort: Desc)])
   @@map("transactions")
+}
+
+model TransactionImport {
+  id             String      @id @default(cuid())
+  userId         String
+  transactionId  String      @unique
+  sourceSystem   String      @db.VarChar(64)
+  sourceRecordId String      @db.VarChar(128)
+  payloadHash    String      @db.Char(64)
+  user           User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transaction    Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  createdAt      DateTime    @default(now())
+
+  @@unique([userId, sourceSystem, sourceRecordId])
+  @@index([userId, createdAt(sort: Desc)])
+  @@map("transaction_imports")
 }

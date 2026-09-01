@@ -39,6 +39,16 @@ export class ConflictError extends AppError {
   }
 }
 
+export class SourceRecordConflictError extends AppError {
+  constructor() {
+    super({
+      code: "SOURCE_RECORD_CONFLICT",
+      message: "The source record was already imported with different data.",
+      statusCode: 409,
+    });
+  }
+}
+
 export class NotFoundError extends AppError {
   constructor(message = "The requested resource was not found.") {
     super({
