@@ -55,6 +55,6 @@ The controlled root cause was an unreachable PostgreSQL network endpoint. No app
 
 ## Support conclusion
 
-The exercise demonstrates that support engineers can distinguish an alive HTTP process from a database-ready application, correlate a failed probe with structured logs, communicate a stable public failure code, and verify recovery without exposing finance data or credentials.
+The exercise demonstrates that an application support workflow can distinguish an alive HTTP process from a database-ready application, correlate a failed probe with structured logs, communicate a stable public failure code, and verify recovery without exposing finance data or credentials.
 
 Environment-specific alerting, provider diagnostics, capacity checks, and escalation remain outside this local drill and must be defined before production operation.

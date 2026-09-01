@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This foundation gives application support engineers a safe way to determine whether an application instance is alive, whether it can serve database-backed traffic, and how to correlate an API response with structured server logs. It is intentionally vendor-neutral and writes logs to stdout or stderr.
+This foundation provides a safe application support workflow for determining whether an application instance is alive, whether it can serve database-backed traffic, and how to correlate an API response with structured server logs. It is intentionally vendor-neutral and writes logs to stdout or stderr.
 
 It does not provide centralized log storage, alerting, historical uptime, metrics, or distributed tracing.
 

@@ -1,0 +1,29 @@
+name: Incident report
+description: Record a real or controlled operational event with an explicit boundary.
+title: "[INC] "
+body:
+  - type: dropdown
+    id: exercise
+    attributes:
+      label: Event type
+      options: [Controlled simulation, Real environment event]
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope, symptoms, and impact boundary
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Sanitized evidence and timeline
+    validations:
+      required: true
+  - type: textarea
+    id: recovery
+    attributes:
+      label: Recovery and validation
+    validations:
+      required: true

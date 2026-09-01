@@ -1,0 +1,29 @@
+name: Bug report
+description: Report a reproducible application defect.
+title: "[BUG] "
+body:
+  - type: textarea
+    id: context
+    attributes:
+      label: Context and observed behavior
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Safe reproduction steps
+    validations:
+      required: true
+  - type: textarea
+    id: validation
+    attributes:
+      label: Expected behavior and validation plan
+    validations:
+      required: true
+  - type: checkboxes
+    id: security
+    attributes:
+      label: Data safety
+      options:
+        - label: I removed credentials, cookies, personal data, and financial data.
+          required: true
