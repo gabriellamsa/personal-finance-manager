@@ -1,0 +1,55 @@
+{
+  "capturedAt": "2026-09-07T20:37:36.831Z",
+  "environment": "local synthetic demonstration",
+  "scenarios": [
+    {
+      "name": "dry-run",
+      "exitCode": 2,
+      "received": 7,
+      "valid": 2,
+      "created": 0,
+      "already_imported": 0,
+      "rejected_validation": 4,
+      "rejected_category": 1,
+      "source_conflicts": 0,
+      "retry_count": 0
+    },
+    {
+      "name": "first-import",
+      "exitCode": 0,
+      "received": 3,
+      "valid": 3,
+      "created": 3,
+      "already_imported": 0,
+      "rejected_validation": 0,
+      "rejected_category": 0,
+      "source_conflicts": 0,
+      "retry_count": 0
+    },
+    {
+      "name": "identical-replay",
+      "exitCode": 0,
+      "received": 3,
+      "valid": 3,
+      "created": 0,
+      "already_imported": 3,
+      "rejected_validation": 0,
+      "rejected_category": 0,
+      "source_conflicts": 0,
+      "retry_count": 0
+    },
+    {
+      "name": "changed-replay",
+      "exitCode": 2,
+      "received": 1,
+      "valid": 1,
+      "created": 0,
+      "already_imported": 0,
+      "rejected_validation": 0,
+      "rejected_category": 0,
+      "source_conflicts": 1,
+      "retry_count": 0
+    }
+  ],
+  "syntheticAccountRemoved": true
+}

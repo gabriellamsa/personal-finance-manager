@@ -19,6 +19,14 @@
 
 ---
 
+## Demonstration and evidence
+
+![Personal Finance Manager dashboard with synthetic data](docs/evidence/dashboard.png)
+
+[Portfolio case study](https://gabrielladev.com/projects/personal-finance-management-system) · [Product recording](docs/evidence/product-demo.webm) · [Current validation](docs/release-validation/portfolio-publication.md) · [Connected Python pipeline](https://github.com/gabriellamsa/transaction-import-recovery-pipeline)
+
+All demonstration records are synthetic. The Python integration demonstrates three created transactions, an identical replay with zero duplicates, and explicit rejection of a changed payload.
+
 ## Overview
 
 Personal Finance Manager is a portfolio project focused on application development, authenticated user flows, relational data modeling, API design, automated testing, continuous integration, and operational readiness.
@@ -50,6 +58,7 @@ The core finance flow, responsive product interface, regression suite, and vendo
 - Filtering by type, category, and date range
 - Pagination for transaction history
 - User-scoped authorization checks
+- Authenticated, idempotent transaction import for external portfolio integrations
 - Loading, empty, success, and error states
 
 ### Category management
@@ -137,6 +146,7 @@ Zod schemas validate data at the API boundary before requests reach application 
 | User | Stores account and profile information |
 | Category | Stores system-defined and user-defined categories |
 | Transaction | Stores income and expense records linked to a user and category |
+| TransactionImport | Stores destination-owned source identity and payload hash metadata for imported transactions |
 
 Domain rules include:
 
@@ -145,6 +155,7 @@ Domain rules include:
 - Categories can be system-defined or user-defined.
 - Dashboard totals are derived from persisted transaction data.
 - Users can only access their own protected data.
+- Imported transactions are unique per authenticated user, source system, and source record ID.
 
 ---
 
@@ -225,11 +236,15 @@ POST   /api/transactions
 PATCH  /api/transactions/[transactionId]
 DELETE /api/transactions/[transactionId]
 
+POST   /api/integrations/transactions/import
+
 GET    /api/health/live
 GET    /api/health/ready
 ```
 
 Health endpoints are public, uncached, and intentionally expose only safe operational metadata. `/api/health/live` confirms the current process can respond without accessing PostgreSQL. `/api/health/ready` validates required configuration and performs a read-only PostgreSQL connectivity check. See the [observability guide](docs/observability.md) for contracts, correlation behavior, log fields, and local verification.
+
+The transaction import endpoint reuses the existing authenticated session, derives ownership from that session, and enforces destination-side idempotency on the authenticated user, source system, and source record ID. Identical replays return `already_imported`; changed payloads for an existing source key return `SOURCE_RECORD_CONFLICT`. The companion Python client and operational workflow are documented in the sibling `transaction-import-recovery-pipeline` repository.
 
 ---
 

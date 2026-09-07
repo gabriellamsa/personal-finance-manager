@@ -12,13 +12,13 @@ This case study evolves that existing product instead of creating a separate dem
 - Repository: `personal-finance-manager`
 - Baseline tag: `application-support-baseline`
 - Implementation branch: `feat/application-support-observability`
-- Completion tag: `application-support-v1` after the implementation is reviewed and merged
+- Completion tag: `application-support-v1` for the merged observability foundation
 
 The baseline tag identifies the product state before the operational-readiness implementation. This makes the before-and-after change reviewable without duplicating the application in another repository.
 
 ## Initial operational problem
 
-The application could process finance workflows, but support engineers lacked a reliable way to answer basic incident questions:
+The application could process finance workflows, but it lacked a reliable way to answer basic incident questions:
 
 - Is the application process alive?
 - Is it ready to serve database-backed traffic?
@@ -110,7 +110,7 @@ The implementation is validated through the existing project pipeline:
 - an isolated PostgreSQL failure-and-recovery drill after the production build;
 - `git diff --check` for patch integrity.
 
-The complete local gate executed on 2026-08-30 passed 53 Vitest tests, six Playwright scenarios, the Next.js 16.3.3 production build, the PostgreSQL failure-and-recovery drill, runtime HTTP contract checks, and a complete security review of the changed source/configuration inventory. The reproducible evidence and honest limitations are recorded in the [Validation and Release Readiness Report](./validation-report.md).
+The complete local gate executed on 2026-08-30 passed 53 Vitest tests, six Playwright scenarios, the Next.js 16.3.3 production build, the PostgreSQL failure-and-recovery drill, runtime HTTP contract checks, and a security-focused review of the changed source and configuration files. The reproducible evidence and honest limitations are recorded in the [Validation and Release Readiness Report](./validation-report.md).
 
 No second CI workflow, external monitoring provider, schema migration, or fake dependency check is introduced.
 
@@ -134,6 +134,10 @@ This implementation is an operational foundation, not a complete monitoring plat
 
 ## Portfolio narrative
 
-> I took an existing full-stack application and improved its operational readiness by adding health checks, structured logging, request correlation, database readiness monitoring, automated validation, and support runbooks.
+> I took an existing full-stack application and improved its operational readiness by adding health checks, structured logging, request correlation, database readiness checks, automated validation, and support runbooks.
 
 The case study demonstrates operational improvement of a real application rather than a separate or duplicated observability demo.
+
+## Connected import integration
+
+The application now also provides an authenticated, idempotent import API for the [Transaction Import & Recovery Pipeline](https://github.com/gabriellamsa/transaction-import-recovery-pipeline). The [current validation record](release-validation/portfolio-publication.md) and [recorded aggregate results](evidence/integration-results.json) document first delivery, identical replay, changed-payload rejection, and local cleanup.
