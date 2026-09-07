@@ -1,5 +1,9 @@
 # Validation and Release Readiness Report
 
+## Current publication evidence
+
+The original report below is a historical snapshot from 2026-08-30. The observability baseline was subsequently merged and passed [remote CI](https://github.com/gabriellamsa/personal-finance-manager/actions/runs/33320503475). See the [2026-09-07 portfolio validation](release-validation/portfolio-publication.md) for the current import integration and demonstration.
+
 ## Executive summary
 
 On 2026-08-30, the uncommitted Application Support & Reliability implementation was validated locally against the repository's complete quality, browser, database, operational, and security gates.
@@ -102,7 +106,7 @@ The CI pipeline now runs `npm run audit:critical` so a future critical advisory 
 
 ## Known limitations
 
-- Remote GitHub Actions has not run because the branch has not been pushed.
+- At the time of this historical report, the branch had not been pushed. The merged observability baseline later passed remote CI as linked above.
 - The local machine used Node.js 24, while CI is configured for Node.js 20.
 - The project does not define a coverage-percentage threshold.
 - Logs remain on stdout/stderr without repository-owned aggregation, retention, or alerting.

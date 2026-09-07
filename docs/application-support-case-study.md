@@ -12,7 +12,7 @@ This case study evolves that existing product instead of creating a separate dem
 - Repository: `personal-finance-manager`
 - Baseline tag: `application-support-baseline`
 - Implementation branch: `feat/application-support-observability`
-- Completion tag: `application-support-v1` after the implementation is reviewed and merged
+- Completion tag: `application-support-v1` for the merged observability foundation
 
 The baseline tag identifies the product state before the operational-readiness implementation. This makes the before-and-after change reviewable without duplicating the application in another repository.
 
@@ -137,3 +137,7 @@ This implementation is an operational foundation, not a complete monitoring plat
 > I took an existing full-stack application and improved its operational readiness by adding health checks, structured logging, request correlation, database readiness checks, automated validation, and support runbooks.
 
 The case study demonstrates operational improvement of a real application rather than a separate or duplicated observability demo.
+
+## Connected import integration
+
+The application now also provides an authenticated, idempotent import API for the [Transaction Import & Recovery Pipeline](https://github.com/gabriellamsa/transaction-import-recovery-pipeline). The [current validation record](release-validation/portfolio-publication.md) and [recorded aggregate results](evidence/integration-results.json) document first delivery, identical replay, changed-payload rejection, and local cleanup.

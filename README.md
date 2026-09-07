@@ -19,6 +19,14 @@
 
 ---
 
+## Demonstration and evidence
+
+![Personal Finance Manager dashboard with synthetic data](docs/evidence/dashboard.png)
+
+[Portfolio case study](https://gabrielladev.com/projects/personal-finance-management-system) · [Product recording](docs/evidence/product-demo.webm) · [Current validation](docs/release-validation/portfolio-publication.md) · [Connected Python pipeline](https://github.com/gabriellamsa/transaction-import-recovery-pipeline)
+
+All demonstration records are synthetic. The Python integration demonstrates three created transactions, an identical replay with zero duplicates, and explicit rejection of a changed payload.
+
 ## Overview
 
 Personal Finance Manager is a portfolio project focused on application development, authenticated user flows, relational data modeling, API design, automated testing, continuous integration, and operational readiness.
